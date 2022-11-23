@@ -4,12 +4,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exceptions.UserCreateException;
 import ru.practicum.shareit.exceptions.UserNotFoundException;
+import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -19,16 +21,16 @@ public class UserDaoImpl implements UserDao {
     private long usersId = 1;
 
     @Override
-    public User createUser(User user) {
+    public UserDto createUser(User user) {
         checkEmail(user);
         generateID(user);
         users.put(user.getId(), user);
         log.debug("Пользователь с id {} и email {} успешно добавлен.", user.getId(), user.getEmail());
-        return user;
+        return UserMapper.toUserDto(user);
     }
 
     @Override
-    public User updateUser(Long userId, User user) {
+    public UserDto updateUser(Long userId, User user) {
         checkUserID(userId);
         checkEmail(user);
         User updateUser = users.get(userId);
@@ -41,17 +43,17 @@ public class UserDaoImpl implements UserDao {
 
         }
         users.put(userId, updateUser);
-        return updateUser;
+        return UserMapper.toUserDto(updateUser);
     }
 
     @Override
-    public List<User> findAllUsers() {
-        return new ArrayList<>(users.values());
+    public List<UserDto> findAllUsers() {
+        return new ArrayList<>(users.values()).stream().map(UserMapper::toUserDto).collect(Collectors.toList());
     }
 
     @Override
-    public User getUser(Long userId) {
-        return users.get(userId);
+    public UserDto getUser(Long userId) {
+        return UserMapper.toUserDto(users.get(userId));
     }
 
     @Override
