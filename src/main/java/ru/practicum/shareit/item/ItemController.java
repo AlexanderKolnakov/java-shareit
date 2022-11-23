@@ -24,7 +24,7 @@ public class ItemController {
     @PostMapping()
     public ItemDto createUser(@RequestHeader("X-Sharer-User-Id") Long ownerId,
                               @RequestBody @Valid Item item) {
-//        log.debug("Получен POST запрос на создание вещи");
+        log.debug("Получен POST запрос на создание вещи");
         return itemService.createItem(ownerId, item);
     }
 
@@ -32,25 +32,25 @@ public class ItemController {
     public ItemDto updateItem(@RequestHeader("X-Sharer-User-Id") Long ownerId,
                               @PathVariable Long itemId,
                               @RequestBody Item item) {
-//        log.debug("Получен PATCH запрос на обновление вещи с id: " + itemId + " у пользователя пользователя с id: " + ownerId);
+        log.debug("Получен PATCH запрос на обновление вещи с id: " + itemId + " у пользователя пользователя с id: " + ownerId);
         return itemService.updateItem(ownerId, itemId, item);
     }
 
     @GetMapping
     public List<ItemDto> findAllUsersItem(@RequestHeader("X-Sharer-User-Id") Long ownerId) {
-//        log.debug("Получен GET запрос на получение списка всех вещей пользователя с id: " + ownerId);
+        log.debug("Получен GET запрос на получение списка всех вещей пользователя с id: " + ownerId);
         return itemService.findAllItem(ownerId);
     }
 
     @GetMapping("/{itemId}")
     public ItemDto findUserItem(@RequestHeader("X-Sharer-User-Id") Long ownerId, @PathVariable Long itemId) {
-//        log.debug("Получен GET запрос на получение вещи с id: " + itemId + " у пользователя с id: {}.", ownerId);
+        log.debug("Получен GET запрос на получение вещи с id: " + itemId + " у пользователя с id: {}.", ownerId);
         return itemService.getUserItem(ownerId, itemId);
     }
 
     @GetMapping("/search")
     List<ItemDto> findItemByDescription(@RequestParam String text) {
-//        log.debug("Получен GET запрос на получение вещи по описанию строки, text =" + text);
+        log.debug("Получен GET запрос на получение вещи по описанию строки, text =" + text);
         if (text.isEmpty()) {
             return Collections.emptyList();
         } else {
