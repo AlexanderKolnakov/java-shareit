@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.validation.BeforeNow;
 
 
 import javax.validation.constraints.Positive;
@@ -19,10 +18,8 @@ public class Booking {
     @Positive(message = "Некорректный номер id.")
     private Long id;
 
-    @BeforeNow(message = "Некорректная дата рождения.")
     private LocalDate start;
 
-    @BeforeNow(message = "Некорректная дата рождения.")
     private LocalDate end;
 
     private Item item;
