@@ -72,11 +72,13 @@ public class ItemDaoImpl implements ItemDao {
         item.setId(itemsID);
         itemsID++;
     }
+
     private void checkItemID(Long id) {
         if (!itemMap.containsKey(id)) {
             throw new UserNotFoundException("Вещи с id " + id + " не существует.");
         }
     }
+
     private void checkItemOwner(Long ownerId, Long itemId) {
         if (!itemMap.get(itemId).getOwner().equals(ownerId)) {
             throw new UserNotFoundException("У пользователя с id " + ownerId + " нет вещи с id " + itemId);

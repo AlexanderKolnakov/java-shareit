@@ -25,6 +25,7 @@ public class ErrorHandler {
         log.info("400 {}", e.getMessage());
         return e.getFieldError().getDefaultMessage();
     }
+
     @ExceptionHandler
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public String error400(final MissingRequestHeaderException e) {

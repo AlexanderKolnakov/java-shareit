@@ -30,8 +30,8 @@ public class ItemController {
 
     @PatchMapping("/{itemId}")
     public ItemDto updateItem(@RequestHeader("X-Sharer-User-Id") Long ownerId,
-                           @PathVariable Long itemId,
-                           @RequestBody Item item) {
+                              @PathVariable Long itemId,
+                              @RequestBody Item item) {
         log.debug("Получен PATCH запрос на обновление вещи с id: " + itemId + " у пользователя пользователя с id: " + ownerId);
         return itemService.updateItem(ownerId, itemId, item);
     }
@@ -51,7 +51,7 @@ public class ItemController {
     @GetMapping("/search")
     List<ItemDto> findItemByDescription(@RequestParam String text) {
         log.debug("Получен GET запрос на получение вещи по описанию строки, text =" + text);
-        if (text.isEmpty()){
+        if (text.isEmpty()) {
             return Collections.emptyList();
         } else {
             return itemService.getItemSearchByDescription(text);
