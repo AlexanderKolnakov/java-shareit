@@ -5,9 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
-import javax.validation.constraints.AssertTrue;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Positive;
+import javax.validation.constraints.*;
 
 @Data
 @AllArgsConstructor
@@ -24,8 +22,8 @@ public class Item {
     @NotBlank(message = "Вы не указали описание вещи")
     private String description;
 
-    @AssertTrue(message = "Вы не указали статус: доступна или вещь для аренды или нет")
-    private boolean available;
+    @NotNull(message = "Вы не указали статус: доступна или вещь для аренды или нет")
+    private Boolean available;
 
     private Long owner;
 
