@@ -2,6 +2,7 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserDao;
 
@@ -15,32 +16,32 @@ public class ItemServiceImpl implements ItemService {
     private final UserDao userDao;
 
     @Override
-    public Item createItem(Long ownerId, Item item) {
+    public ItemDto createItem(Long ownerId, Item item) {
         checkOwnerId(ownerId);
         item.setOwner(ownerId);
         return itemDao.createItem(item);
     }
 
     @Override
-    public Item updateItem(Long ownerId, Long itemId, Item item) {
+    public ItemDto updateItem(Long ownerId, Long itemId, Item item) {
         checkOwnerId(ownerId);
         return itemDao.updateItem(ownerId, itemId, item);
     }
 
     @Override
-    public List<Item> findAllItem(Long ownerId) {
+    public List<ItemDto> findAllItem(Long ownerId) {
         checkOwnerId(ownerId);
         return itemDao.findAllItem(ownerId);
     }
 
     @Override
-    public Item getUserItem(Long ownerId, Long itemId) {
+    public ItemDto getUserItem(Long ownerId, Long itemId) {
         checkOwnerId(ownerId);
         return itemDao.getItem(ownerId, itemId);
     }
 
     @Override
-    public List<Item> getItemSearchByDescription(String text) {
+    public List<ItemDto> getItemSearchByDescription(String text) {
         return itemDao.getItemSearch(text.toLowerCase());
     }
 

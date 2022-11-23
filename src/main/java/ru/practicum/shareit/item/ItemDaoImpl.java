@@ -1,9 +1,12 @@
 package ru.practicum.shareit.item;
 
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import ru.practicum.shareit.exceptions.UserNotFoundException;
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.HashMap;
@@ -13,21 +16,23 @@ import java.util.stream.Collectors;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class ItemDaoImpl implements ItemDao {
 
     private final Map<Long, Item> itemMap = new HashMap<>();
+
     private long itemsID = 1;
 
     @Override
-    public Item createItem(Item item) {
+    public ItemDto createItem(Item item) {
         generateID(item);
         itemMap.put(item.getId(), item);
         log.debug("Вещь с id {} и названием {} успешно добавлена.", item.getId(), item.getName());
-        return item;
+        return ItemMapper.toItemDto(item);
     }
 
     @Override
-    public Item updateItem(Long ownerId, Long itemId, Item item) {
+    public ItemDto updateItem(Long ownerId, Long itemId, Item item) {
         checkItemID(itemId);
         checkItemOwner(ownerId, itemId);
         Item updateItem = itemMap.get(itemId);
@@ -42,24 +47,26 @@ public class ItemDaoImpl implements ItemDao {
             updateItem.setAvailable(item.getAvailable());
         }
         itemMap.put(itemId, updateItem);
-        return updateItem;
+        return ItemMapper.toItemDto(updateItem);
     }
 
     @Override
-    public List<Item> findAllItem(Long ownerId) {
-        return itemMap.values().stream().filter(e -> e.getOwner().equals(ownerId)).collect(Collectors.toList());
+    public List<ItemDto> findAllItem(Long ownerId) {
+        return itemMap.values().stream().map(ItemMapper::toItemDto).
+                filter(e -> e.getOwner().equals(ownerId)).
+                collect(Collectors.toList());
     }
 
     @Override
-    public Item getItem(Long ownerId, Long itemId) {
-        return itemMap.get(itemId);
+    public ItemDto getItem(Long ownerId, Long itemId) {
+        return ItemMapper.toItemDto(itemMap.get(itemId));
     }
 
     @Override
-    public List<Item> getItemSearch(String text) {
-        return itemMap.values().stream().
+    public List<ItemDto> getItemSearch(String text) {
+        return itemMap.values().stream().map(ItemMapper::toItemDto).
                 filter(e -> e.getDescription().toLowerCase().contains(text) || e.getName().toLowerCase().contains(text)).
-                filter(Item::getAvailable).
+                filter(ItemDto::getAvailable).
                 collect(Collectors.toList());
     }
 
