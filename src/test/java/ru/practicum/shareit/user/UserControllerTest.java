@@ -19,6 +19,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import ru.practicum.shareit.user.model.User;
 
 
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -36,10 +37,6 @@ public class UserControllerTest {
             .build();
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private UserController controller;
-
 
     @Test
     public void shouldCreateUser() throws Exception {
@@ -66,7 +63,7 @@ public class UserControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException))
                 .andExpect(result -> assertTrue(
-                        result.getResolvedException().getMessage().contains(message)));
+                        Objects.requireNonNull(result.getResolvedException()).getMessage().contains(message)));
     }
 
     private static Stream<Arguments> usersParam() {
