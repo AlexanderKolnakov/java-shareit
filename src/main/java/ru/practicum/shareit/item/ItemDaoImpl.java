@@ -50,9 +50,9 @@ public class ItemDaoImpl implements ItemDao {
 
     @Override
     public List<ItemDto> findAllItem(Long ownerId) {
-        return itemMap.values().stream().map(ItemMapper::toItemDto).
-                filter(e -> e.getOwner().equals(ownerId)).
-                collect(Collectors.toList());
+        return itemMap.values().stream().map(ItemMapper::toItemDto)
+                .filter(e -> e.getOwner().equals(ownerId))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -62,10 +62,10 @@ public class ItemDaoImpl implements ItemDao {
 
     @Override
     public List<ItemDto> getItemSearch(String text) {
-        return itemMap.values().stream().map(ItemMapper::toItemDto).
-                filter(e -> e.getDescription().toLowerCase().contains(text) || e.getName().toLowerCase().contains(text)).
-                filter(ItemDto::getAvailable).
-                collect(Collectors.toList());
+        return itemMap.values().stream().map(ItemMapper::toItemDto)
+                .filter(e -> e.getDescription().toLowerCase().contains(text) || e.getName().toLowerCase().contains(text))
+                .filter(ItemDto::getAvailable)
+                .collect(Collectors.toList());
     }
 
     private void generateID(Item item) {
