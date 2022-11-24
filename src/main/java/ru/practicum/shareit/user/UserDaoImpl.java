@@ -53,6 +53,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public UserDto getUser(Long userId) {
+        checkUserID(userId);
         return UserMapper.toUserDto(users.get(userId));
     }
 

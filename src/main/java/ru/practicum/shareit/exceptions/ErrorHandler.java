@@ -19,18 +19,11 @@ public class ErrorHandler {
         return e.getMessage();
     }
 
-    @ExceptionHandler
+    @ExceptionHandler({MethodArgumentNotValidException.class, MissingRequestHeaderException.class})
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public String error400(final MethodArgumentNotValidException e) {
         log.info("400 {}", e.getMessage());
         return e.getFieldError().getDefaultMessage();
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-    public String error400(final MissingRequestHeaderException e) {
-        log.info("400 {}", e.getMessage());
-        return e.getMessage();
     }
 
     @ExceptionHandler
