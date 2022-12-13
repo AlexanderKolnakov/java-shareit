@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.persistence.EntityNotFoundException;
+
 @Slf4j
 @RestControllerAdvice
 public class ErrorHandler {
@@ -26,10 +28,17 @@ public class ErrorHandler {
         return e.getFieldError().getDefaultMessage();
     }
 
-    @ExceptionHandler
+    @ExceptionHandler({EntityNotFoundException.class, UserNotFoundException.class})
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
-    public String error404(final UserNotFoundException e) {
+    public String error404(final EntityNotFoundException e) {
         log.info("404 {}", e.getMessage());
+        return e.getMessage();
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public String error400(final BookingException e) {
+        log.info("400 {}", e.getMessage());
         return e.getMessage();
     }
 }
