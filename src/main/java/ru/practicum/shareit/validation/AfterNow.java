@@ -10,12 +10,11 @@ import java.lang.annotation.Target;
 @Constraint(validatedBy = AfterValidator.class)
 @Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface After {
+public @interface AfterNow {
     String message() default "должен быть после {value}";
 
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};
 
-    String value();
 }

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.exceptions.BookingException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.user.UserRepository;
@@ -26,8 +27,10 @@ public class BookingServiceImpl implements BookingService{
         checkAvailable(booking.getItemId());
         checkBookerId(bookerId);
         checkBookingDateTime(booking);
+        booking.setBookerId(bookerId);
+        booking.setStatus(Status.WAITING);
         bookingRepository.save(booking);
-        return null;
+        return BookingMapper.toBookingDto(bookingRepository.save(booking));
     }
 
     @Override

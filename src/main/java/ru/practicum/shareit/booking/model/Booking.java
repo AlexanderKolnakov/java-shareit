@@ -5,6 +5,7 @@ import org.aspectj.lang.annotation.Before;
 import org.hibernate.Hibernate;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.validation.AfterNow;
 import ru.practicum.shareit.validation.BeforeNow;
 
 
@@ -28,18 +29,21 @@ public class Booking {
     private Long id;
 
     @Column(name = "START_DATE")
+    @AfterNow(message = "Дата начала бронирования не может быть в прошлом.")
     private LocalDate start;
 
     @Column(name = "END_DATE")
-    @BeforeNow(message = "Дата окончания бронирования не может быть в прошлом.")
+    @AfterNow(message = "Дата окончания бронирования не может быть в прошлом.")
     private LocalDate end;
 
     @Column(name = "ITEM_ID")
-    private Long itemId;
+    private Item item;
 
     @Column(name = "BOOKER_ID")
-    private Long bookerId;
+    private User booker;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "STATUS")
     private Status status;
 
     @Override
