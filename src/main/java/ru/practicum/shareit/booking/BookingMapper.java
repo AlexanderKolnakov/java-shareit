@@ -1,18 +1,37 @@
 package ru.practicum.shareit.booking;
 
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.item.ItemMapper;
+import ru.practicum.shareit.item.ItemRepository;
+import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.UserMapper;
+import ru.practicum.shareit.user.UserRepository;
+import ru.practicum.shareit.user.model.User;
 
 public class BookingMapper {
+
 
     public static BookingDto toBookingDto(Booking booking) {
         return new BookingDto(
                 booking.getId(),
                 booking.getStart(),
                 booking.getEnd(),
-                booking.getItemId(),
-                booking.getBookerId(),
+                UserMapper.toUserDto(booking.getBooker()),
                 booking.getStatus(),
+                ItemMapper.toItemDto(booking.getItem())
+        );
+    }
+
+    public static Booking toBookingFromBookingRequestDto (BookingRequestDto bookingRequestDto, Item item, User user) {
+        return new Booking (
+                bookingRequestDto.getId(),
+                bookingRequestDto.getStart(),
+                bookingRequestDto.getEnd(),
+                item,
+                user,
+                bookingRequestDto.getStatus()
         );
     }
 }

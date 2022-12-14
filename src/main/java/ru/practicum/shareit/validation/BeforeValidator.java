@@ -2,15 +2,15 @@ package ru.practicum.shareit.validation;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-public class BeforeValidator implements ConstraintValidator<BeforeNow, LocalDate> {
+public class BeforeValidator implements ConstraintValidator<BeforeNow, LocalDateTime> {
 
 
-    public boolean isValid(LocalDate value, ConstraintValidatorContext context) {
+    public boolean isValid(LocalDateTime value, ConstraintValidatorContext context) {
         boolean valid = true;
         if (value != null) {
-            if (!value.isBefore(LocalDate.now())) {
+            if (!value.isBefore(LocalDateTime.now())) {
                 valid = false;
             }
         }

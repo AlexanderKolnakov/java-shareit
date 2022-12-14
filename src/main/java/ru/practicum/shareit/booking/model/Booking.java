@@ -12,6 +12,7 @@ import ru.practicum.shareit.validation.BeforeNow;
 import javax.persistence.*;
 import javax.validation.constraints.Positive;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Getter
@@ -30,16 +31,18 @@ public class Booking {
 
     @Column(name = "START_DATE")
     @AfterNow(message = "Дата начала бронирования не может быть в прошлом.")
-    private LocalDate start;
+    private LocalDateTime start;
 
     @Column(name = "END_DATE")
     @AfterNow(message = "Дата окончания бронирования не может быть в прошлом.")
-    private LocalDate end;
+    private LocalDateTime end;
 
-    @Column(name = "ITEM_ID")
+    @OneToOne
+    @JoinColumn(name = "ITEM_ID")
     private Item item;
 
-    @Column(name = "BOOKER_ID")
+    @OneToOne
+    @JoinColumn(name = "BOOKER_ID")
     private User booker;
 
     @Enumerated(EnumType.STRING)
