@@ -13,6 +13,7 @@ import ru.practicum.shareit.item.dto.ItemUpdateDto;
 import ru.practicum.shareit.item.model.Item;
 
 import javax.validation.Valid;
+import java.util.List;
 
 
 @RestController
@@ -31,11 +32,35 @@ public class BookingController {
     }
 
     @PatchMapping("/{bookingId}")
-    public BookingDto changeBookingStatus (@RequestHeader("X-Sharer-User-Id") Long bookerId,
+    public BookingDto changeBookingStatus (@RequestHeader("X-Sharer-User-Id") Long userId,
                               @PathVariable Long bookingId,
                               @RequestParam("approved") Boolean approved) {
-        log.debug("Получен PATCH запрос на обновление статуса бронирование с id: " + bookingId +
-                " от пользователя с id: " + bookerId);
-        return bookingService.changeBookingStatus(bookerId, bookingId, approved);
+        log.info("Получен PATCH запрос на обновление статуса бронирование с id: " + bookingId +
+                " от пользователя с id: " + userId);
+        return bookingService.changeBookingStatus(userId, bookingId, approved);
+    }
+
+    @GetMapping("/{bookingId}")
+    public BookingDto getBooking(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable Long bookingId) {
+        log.debug("Получен GET запрос на получение информации о бронировании с id: " +
+                bookingId + " от пользователя с id: {}.", userId);
+        return bookingService.getBooking(userId, bookingId);
+    }
+
+    @GetMapping()
+    public List<BookingDto> getAllBooking(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                          @RequestParam(name = "state", defaultValue = "ALL",
+                                                  required = false) State state) {
+//        switch (state) {
+//            case ALL:
+//                log.debug("Получен GET запрос на получение информации обо всех бронированиях пользователя с id: {}.", userId);
+//                return bookingService.getAllBooking(userId);
+//            case PAST:
+//                return null;
+//            default:
+//                return null;
+//        }
+        log.debug("Получен GET запрос на получение информации обо всех бронированиях пользователя с id: {}.", userId);
+        return bookingService.getAllBooking(userId, state);
     }
 }

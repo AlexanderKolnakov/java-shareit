@@ -7,16 +7,16 @@ import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.exceptions.BookingException;
-import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.UserRepository;
-import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -47,8 +47,31 @@ public class BookingServiceImpl implements BookingService{
     }
 
     @Override
-    public BookingDto changeBookingStatus(Long bookerId, Long bookingId, Boolean approved) {
-        return null;
+    public BookingDto changeBookingStatus(Long userId, Long bookingId, Boolean approved) {
+
+        checkMayUserApprovedBooking(userId, bookingId);
+        Booking booking = bookingRepository.getById(bookingId);
+        if (approved) {
+            booking.setStatus(Status.APPROVED);
+        } else {
+            booking.setStatus(Status.REJECTED);
+        }
+        return BookingMapper.toBookingDto(bookingRepository.save(booking));
+    }
+
+    @Override
+    public BookingDto getBooking(Long userId, Long bookingId) {
+        checkBookerId(userId);
+        checkBookingId(bookingId);
+        checkMayUserGetBookingInfo(userId, bookingId);
+        return BookingMapper.toBookingDto(bookingRepository.getById(bookingId));
+    }
+
+    @Override
+    public List<BookingDto> getAllBooking(Long userId, State state) {
+        checkBookerId(userId);
+        return BookingMapper.mapToBookingDto(bookingRepository.findAll()
+                .stream().sorted(Comparator.comparing(Booking::getId).reversed()).collect(Collectors.toList()));
     }
 
 
@@ -69,9 +92,32 @@ public class BookingServiceImpl implements BookingService{
         }
     }
 
+    private void checkBookingId(Long bookingId) {
+        if (bookingRepository.findById(bookingId).isEmpty()) {
+            throw new EntityNotFoundException("Бронирования с id " + bookingId + " не существует");
+        }
+    }
+
+
+
     private void checkBookingDateTime(BookingRequestDto booking) {
         if (booking.getEnd().isBefore(booking.getStart())) {
             throw new BookingException("Дата конца бронирования не может быть раньше чем ее начало.");
+        }
+    }
+
+    private void checkMayUserApprovedBooking(Long userId, Long bookingId) {
+        if (!(bookingRepository.getById(bookingId).getItem().getOwner().equals(userId))) {
+            throw new BookingException("Пользователь с id " + userId + " не может подтвердить бронирование этой вещи, " +
+                    "так как не является ее владельцем");
+        }
+    }
+
+    private void checkMayUserGetBookingInfo(Long userId, Long bookingId) {
+        if (!(bookingRepository.getById(bookingId).getItem().getOwner().equals(userId)
+                || bookingRepository.getById(bookingId).getBooker().getId().equals(userId))) {
+            throw new BookingException("Пользователь с id " + userId + " не может получить информацию " +
+                    "о бронировании с id  " + bookingId + " так как не является ее владельцем или арендатором");
         }
     }
 
