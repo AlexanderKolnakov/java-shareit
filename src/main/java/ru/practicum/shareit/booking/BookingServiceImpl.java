@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
@@ -14,6 +15,7 @@ import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.EntityNotFoundException;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -52,26 +54,51 @@ public class BookingServiceImpl implements BookingService{
         checkMayUserApprovedBooking(userId, bookingId);
         Booking booking = bookingRepository.getById(bookingId);
         if (approved) {
+            checkBookingAlreadyApproved(bookingId);
             booking.setStatus(Status.APPROVED);
+
+
+
+//            Item item = bookingRepository.getById(bookingId).getItem();
+//            item.setAvailable(false);
+//            itemRepository.save(item);
         } else {
             booking.setStatus(Status.REJECTED);
         }
         return BookingMapper.toBookingDto(bookingRepository.save(booking));
     }
 
+
     @Override
     public BookingDto getBooking(Long userId, Long bookingId) {
         checkBookerId(userId);
         checkBookingId(bookingId);
-        checkMayUserGetBookingInfo(userId, bookingId);
+        checkMayUserGetBookingInfo(userId, bookingId);  // 404
         return BookingMapper.toBookingDto(bookingRepository.getById(bookingId));
     }
 
     @Override
-    public List<BookingDto> getAllBooking(Long userId, State state) {
+    public List<BookingDto> getAllBooking(Long userId, String state) {
+
         checkBookerId(userId);
-        return BookingMapper.mapToBookingDto(bookingRepository.findAll()
-                .stream().sorted(Comparator.comparing(Booking::getId).reversed()).collect(Collectors.toList()));
+        try {
+            State stateCorrect = State.valueOf(state);
+
+            switch (stateCorrect) {
+                case ALL:
+                    return BookingMapper.mapToBookingDto(bookingRepository.findAll()
+                            .stream().sorted(Comparator.comparing(Booking::getId).reversed()).collect(Collectors.toList()));
+                case FUTURE:
+                    return BookingMapper.mapToBookingDto(bookingRepository.findAll()
+                            .stream().filter(e -> e.getStart().isAfter(LocalDateTime.now()))
+                            .sorted(Comparator.comparing(Booking::getId).reversed()).collect(Collectors.toList()));
+                default:
+                    throw new BookingException("Unknown state: " + state);
+            }
+
+        } catch (IllegalArgumentException e) {
+            throw new BookingException("Unknown state: " + state);
+        }
     }
 
 
@@ -108,7 +135,7 @@ public class BookingServiceImpl implements BookingService{
 
     private void checkMayUserApprovedBooking(Long userId, Long bookingId) {
         if (!(bookingRepository.getById(bookingId).getItem().getOwner().equals(userId))) {
-            throw new BookingException("Пользователь с id " + userId + " не может подтвердить бронирование этой вещи, " +
+            throw new EntityNotFoundException("Пользователь с id " + userId + " не может подтвердить бронирование этой вещи, " +
                     "так как не является ее владельцем");
         }
     }
@@ -116,9 +143,14 @@ public class BookingServiceImpl implements BookingService{
     private void checkMayUserGetBookingInfo(Long userId, Long bookingId) {
         if (!(bookingRepository.getById(bookingId).getItem().getOwner().equals(userId)
                 || bookingRepository.getById(bookingId).getBooker().getId().equals(userId))) {
-            throw new BookingException("Пользователь с id " + userId + " не может получить информацию " +
+            throw new EntityNotFoundException("Пользователь с id " + userId + " не может получить информацию " +
                     "о бронировании с id  " + bookingId + " так как не является ее владельцем или арендатором");
         }
     }
 
+    private void checkBookingAlreadyApproved(Long bookingId) {
+        if (bookingRepository.getById(bookingId).getStatus().equals(Status.APPROVED)) {
+            throw new BookingException("Статус бронирования с id " + bookingId + " уже подтвержден.");
+        }
+    }
 }

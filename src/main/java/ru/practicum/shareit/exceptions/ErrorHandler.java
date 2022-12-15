@@ -37,8 +37,8 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-    public String error400(final BookingException e) {
+    public ErrorResponse error400(final BookingException e) {
         log.info("400 {}", e.getMessage());
-        return e.getMessage();
+        return new ErrorResponse(e.getMessage());
     }
 }
