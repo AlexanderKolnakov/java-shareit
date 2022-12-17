@@ -42,7 +42,7 @@ public class Booking {
     private Item item;
 
     @OneToOne
-    @JoinColumn(name = "BOOKER_ID")
+    @JoinColumn(name = "USER_ID")
     private User booker;
 
     @Enumerated(EnumType.STRING)

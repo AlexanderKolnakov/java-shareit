@@ -32,36 +32,38 @@ public class BookingServiceImpl implements BookingService{
 
     @Override
     public BookingDto createBooking(Long bookerId, BookingRequestDto bookingRequestDto) {
-        checkBookerId(bookerId);
-        checkItemId(itemRepository.getById(bookingRequestDto.getItemId()));
-        checkAvailable(itemRepository.getById(bookingRequestDto.getItemId()));
-        checkBookingDateTime(bookingRequestDto);
-
-        bookingRequestDto.setBookerId(bookerId);
-        bookingRequestDto.setStatus(Status.WAITING);
 
         User user = userRepository.getReferenceById(bookerId);
         Item item = itemRepository.getReferenceById(bookingRequestDto.getItemId());
+
+        checkBookerId(bookerId);
+        checkItemId(item);
+        checkAvailable(item);
+        checkBookingDateTime(bookingRequestDto);
+        checkBookerIsOwner(bookerId, item.getOwner());
+
+        bookingRequestDto.setBookerId(bookerId);
+        bookingRequestDto.setStatus(Status.WAITING);
 
         Booking booking = BookingMapper.toBookingFromBookingRequestDto(bookingRequestDto, item, user);
 
         return BookingMapper.toBookingDto(bookingRepository.save(booking));
     }
 
+    private void checkBookerIsOwner(Long bookerId, Long owner) {
+        if (bookerId.equals(owner)) {
+            throw new EntityNotFoundException("Владелец вещи не может взять ее же в аренду.");
+        }
+    }
+
     @Override
     public BookingDto changeBookingStatus(Long userId, Long bookingId, Boolean approved) {
 
         checkMayUserApprovedBooking(userId, bookingId);
-        Booking booking = bookingRepository.getById(bookingId);
+        Booking booking = bookingRepository.getReferenceById(bookingId);
         if (approved) {
             checkBookingAlreadyApproved(bookingId);
             booking.setStatus(Status.APPROVED);
-
-
-
-//            Item item = bookingRepository.getById(bookingId).getItem();
-//            item.setAvailable(false);
-//            itemRepository.save(item);
         } else {
             booking.setStatus(Status.REJECTED);
         }
