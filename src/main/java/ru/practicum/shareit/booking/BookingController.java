@@ -2,15 +2,11 @@ package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
-import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.item.ItemService;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemUpdateDto;
-import ru.practicum.shareit.item.model.Item;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -24,17 +20,17 @@ import java.util.List;
 public class BookingController {
     private final BookingService bookingService;
 
-    @PostMapping()
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public BookingDto createBooking(@RequestHeader("X-Sharer-User-Id") Long bookerId,
-                                 @RequestBody @Valid BookingRequestDto bookingRequestDto) {
+                                    @RequestBody @Valid BookingRequestDto bookingRequestDto) {
         log.debug("Получен POST запрос на бронирование (booking) вещи");
         return bookingService.createBooking(bookerId, bookingRequestDto);
     }
 
     @PatchMapping("/{bookingId}")
-    public BookingDto changeBookingStatus (@RequestHeader("X-Sharer-User-Id") Long userId,
-                              @PathVariable Long bookingId,
-                              @RequestParam("approved") Boolean approved) {
+    public BookingDto changeBookingStatus(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                          @PathVariable Long bookingId,
+                                          @RequestParam("approved") Boolean approved) {
         log.info("Получен PATCH запрос на обновление статуса бронирование с id: " + bookingId +
                 " от пользователя с id: " + userId);
         return bookingService.changeBookingStatus(userId, bookingId, approved);
@@ -57,8 +53,8 @@ public class BookingController {
 
     @GetMapping("/owner")
     public List<BookingDto> getAllBookingByOwner(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                          @RequestParam(name = "state", defaultValue = "ALL",
-                                                  required = false) String state) {
+                                                 @RequestParam(name = "state", defaultValue = "ALL",
+                                                         required = false) String state) {
         log.debug("Получен GET запрос на получение информации обо всех бронированиях владельца с id: {}.", userId);
         return bookingService.getAllBooking(userId, state, true);
     }

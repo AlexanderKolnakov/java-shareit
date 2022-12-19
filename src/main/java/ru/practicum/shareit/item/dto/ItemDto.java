@@ -3,9 +3,10 @@ package ru.practicum.shareit.item.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import ru.practicum.shareit.booking.dto.BookingItemDto;
-import ru.practicum.shareit.booking.model.Booking;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -23,6 +24,8 @@ public class ItemDto {
     private BookingItemDto lastBooking;
 
     private BookingItemDto nextBooking;
+
+    private List<CommentDto> comments = new ArrayList<>();
 
     public ItemDto(Long id, String name, String description, Boolean available, Long owner) {
         this.id = id;

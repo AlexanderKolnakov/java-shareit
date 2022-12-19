@@ -25,7 +25,7 @@ public class Item {
     @NotBlank(message = "Вы не указали имя вещи")
     private String name;
 
-    @Length(max = 200, message = "Длина описания не должна превышать 400 символов.")
+    @Length(max = 200, message = "Длина описания не должна превышать 200 символов.")
     @NotBlank(message = "Вы не указали описание вещи")
     private String description;
 

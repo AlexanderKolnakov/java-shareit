@@ -6,12 +6,18 @@ import ru.practicum.shareit.booking.BookingMapper;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.dto.BookingItemDto;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.exceptions.BookingException;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemUpdateDto;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
+import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.EntityNotFoundException;
+import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,6 +30,8 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
 
+    private final CommentRepository commentRepository;
+
     @Override
     public ItemDto createItem(Long ownerId, Item item) {
         checkOwnerId(ownerId);
@@ -33,11 +41,16 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public ItemDto updateItem(Long ownerId, Long itemId, ItemUpdateDto itemUpdateDto) {
         checkOwnerId(ownerId);
         checkItemOwner(ownerId, itemId);
         itemUpdateDto.setOwner(ownerId);
         itemUpdateDto.setId(itemId);
+
+
+//        itemRepository.findById(itemId)
+//                .map(item -> ItemMapper.toItem(itemUpdateDto, item))
 
         Item itemResponse = itemRepository.save(ItemMapper.toItem(itemUpdateDto,
                 itemRepository.getReferenceById(itemId)));
@@ -60,10 +73,9 @@ public class ItemServiceImpl implements ItemService {
         Item item = itemRepository.getReferenceById(itemId);
 
         if (item.getOwner().equals(ownerId)) {
-            return setLastAndNextBooking(item);
-        } else return ItemMapper.toItemDto(item);
+            return setComments(setLastAndNextBooking(item));
+        } else return setComments(ItemMapper.toItemDto(item));
     }
-
 
     @Override
     public List<ItemDto> getItemSearchByDescription(String text) {
@@ -72,16 +84,25 @@ public class ItemServiceImpl implements ItemService {
                 .collect(Collectors.toList());
     }
 
-    private void checkOwnerId(Long ownerId) {
-        if (userRepository.findById(ownerId).isEmpty()) {
-            throw new EntityNotFoundException("Пользователя с id " + ownerId + " не существует");
-        }
-    }
+    @Override
+    public CommentDto createComment(Long authorId, Long itemId, Comment comment) {
+        checkOwnerId(authorId);
 
-    private void checkItemOwner(Long ownerId, Long itemId) {
-        if (!(itemRepository.getReferenceById(itemId).getOwner().equals(ownerId))) {
-            throw new EntityNotFoundException("У пользователя с id " + ownerId + " нет вещи с id " + itemId);
-        }
+        Item item = itemRepository.getReferenceById(authorId);
+        User user = userRepository.getReferenceById(authorId);
+
+        List<Booking> itemsBooking = bookingRepository.searchBookingByItemIdAndUserId(itemId, authorId);
+
+        checkUserBookingItem(authorId, itemId);
+//
+//
+//        checkDataCommentCreate(comment.getCreated(), itemsBooking.getEnd());
+
+        comment.setAuthor(user);
+        comment.setItem(item);
+
+        commentRepository.save(comment);
+        return CommentMapper.toCommentDto(comment);
     }
 
     private Booking getLastBooking(List<Booking> itemsBooking) {
@@ -119,6 +140,14 @@ public class ItemServiceImpl implements ItemService {
         return itemDto;
     }
 
+    private ItemDto setComments(ItemDto itemDto) {
+        List<Comment> commentList = commentRepository.searchCommentByItemId(itemDto.getId());
+        itemDto.setComments(CommentMapper.mapToCommentDto(commentList));
+        return itemDto;
+    }
+
+
+
     private List<ItemDto> setLastAndNextBookingForListOfItems (List<Item> items, Long ownerId) {
         List<ItemDto> itemDtoList = new ArrayList<>();
 
@@ -128,5 +157,35 @@ public class ItemServiceImpl implements ItemService {
             } else itemDtoList.add(ItemMapper.toItemDto(item));
         }
         return itemDtoList;
+    }
+
+    private void checkDataCommentCreate(LocalDateTime checkDataEnd, LocalDateTime dataEnd) {
+        if (checkDataEnd.isBefore(dataEnd)) {
+            throw new BookingException("Нельзя оставлять комментарий, пока срок аренды не истек.");
+        }
+    }
+
+//    private void checkUserBookingItem (Long userId, Booking itemsBooking) {
+//        if (!(itemsBooking.getBooker().getId().equals(userId))) {
+//            throw new BookingException("Пользователя с id " + userId + " не брал эту вещ в аренду.");
+//        }
+//    }
+
+    private void checkOwnerId(Long ownerId) {
+        if (userRepository.findById(ownerId).isEmpty()) {
+            throw new EntityNotFoundException("Пользователя с id " + ownerId + " не существует");
+        }
+    }
+
+    private void checkItemOwner(Long ownerId, Long itemId) {
+        if (!(itemRepository.getReferenceById(itemId).getOwner().equals(ownerId))) {
+            throw new EntityNotFoundException("У пользователя с id " + ownerId + " нет вещи с id " + itemId);
+        }
+    }
+
+    private void checkUserBookingItem (Long userId, Long itemId) {
+        if (!((bookingRepository.searchBookingByItemIdAndUserId(itemId, userId).size()) > 0)) {
+            throw new BookingException("Пользователя с id " + userId + " не брал эту вещ в аренду.");
+        }
     }
 }

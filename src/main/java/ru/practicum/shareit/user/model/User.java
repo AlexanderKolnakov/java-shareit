@@ -2,6 +2,7 @@ package ru.practicum.shareit.user.model;
 
 import lombok.*;
 import org.hibernate.Hibernate;
+import org.hibernate.validator.constraints.UniqueElements;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -13,7 +14,8 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "USERS")
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = "email"),
+        name = "USERS")
 public class User {
 
     @Id
