@@ -2,6 +2,8 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.BookingRepository;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemUpdateDto;
 import ru.practicum.shareit.item.model.Item;
@@ -17,6 +19,8 @@ public class ItemServiceImpl implements ItemService {
 
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
+
+    private final BookingRepository bookingRepository;
 
     @Override
     public ItemDto createItem(Long ownerId, Item item) {
@@ -48,9 +52,22 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto getUserItem(Long ownerId, Long itemId) {
+
         Item item = itemRepository.getById(itemId);
-        return ItemMapper.toItemDto(item);
+
+        if (item.getOwner().equals(ownerId)) {
+
+            List<Booking> itemsBooking = bookingRepository.searchBookingByItemId(item.getId());
+
+            Booking lastBooking = getLastBooking(itemsBooking);
+            Booking nextBooking = getNextBooking(itemsBooking);
+
+            return ItemMapper.toItemDto(item, lastBooking, nextBooking);
+
+        } else return ItemMapper.toItemDto(item, null, null);
     }
+
+
 
     @Override
     public List<ItemDto> getItemSearchByDescription(String text) {
@@ -69,5 +86,32 @@ public class ItemServiceImpl implements ItemService {
         if (!(itemRepository.getById(itemId).getOwner().equals(ownerId))) {
             throw new EntityNotFoundException("У пользователя с id " + ownerId + " нет вещи с id " + itemId);
         }
+    }
+    private Booking getLastBooking(List<Booking> itemsBooking) {
+        if (itemsBooking.size() > 0) {
+        Booking bookingResponse = itemsBooking.get(0);
+        for (Booking booking : itemsBooking) {
+            if (booking.getEnd().isBefore(bookingResponse.getEnd())) {
+                bookingResponse = booking;
+            }
+        }
+
+        return bookingResponse;
+        }
+        return null;
+    }
+
+    private Booking getNextBooking(List<Booking> itemsBooking) {
+
+        if (itemsBooking.size() > 0) {
+            Booking bookingResponse = itemsBooking.get(0);
+            for (Booking booking : itemsBooking) {
+                if (booking.getStart().isBefore(bookingResponse.getStart())) {
+                    bookingResponse = booking;
+                }
+            }
+            return bookingResponse;
+        }
+        return null;
     }
 }

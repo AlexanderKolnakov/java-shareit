@@ -37,11 +37,11 @@ public class Booking {
     @AfterNow(message = "Дата окончания бронирования не может быть в прошлом.")
     private LocalDateTime end;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "ITEM_ID")
     private Item item;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "USER_ID")
     private User booker;
 

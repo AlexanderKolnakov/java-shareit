@@ -75,7 +75,7 @@ public class BookingServiceImpl implements BookingService{
     public BookingDto getBooking(Long userId, Long bookingId) {
         checkBookerId(userId);
         checkBookingId(bookingId);
-        checkMayUserGetBookingInfo(userId, bookingId);  // 404
+        checkMayUserGetBookingInfo(userId, bookingId);
         return BookingMapper.toBookingDto(bookingRepository.getById(bookingId));
     }
 

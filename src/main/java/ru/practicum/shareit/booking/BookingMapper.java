@@ -13,7 +13,6 @@ import java.util.List;
 
 public class BookingMapper {
 
-
     public static BookingDto toBookingDto(Booking booking) {
         return new BookingDto(
                 booking.getId(),
