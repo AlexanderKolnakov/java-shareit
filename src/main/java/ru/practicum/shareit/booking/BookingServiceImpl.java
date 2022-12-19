@@ -86,7 +86,7 @@ public class BookingServiceImpl implements BookingService {
         try {
             State stateCorrect = State.valueOf(state);
 
-            List<BookingDto> bookingDtos = BookingMapper.mapToBookingDto(bookingRepository.findAll()
+            List<BookingDto> bookingsDto = BookingMapper.mapToBookingDto(bookingRepository.findAll()
                     .stream()
                     .sorted(Comparator.comparing(Booking::getStart).reversed())
                     .collect(Collectors.toList()));
@@ -95,47 +95,40 @@ public class BookingServiceImpl implements BookingService {
 
                 case ALL:
                     if (isOwner)
-
-                        return bookingDtos.stream().filter(e -> e.getItem().getOwner().equals(userId))
+                        return bookingsDto.stream()
+                                .filter(e -> e.getItem().getOwner().equals(userId))
                                 .collect(Collectors.toList());
                     else
-                        return BookingMapper.mapToBookingDto(bookingRepository.findAll()
-                                .stream().filter(e -> e.getBooker().getId().equals(userId))
-                                .sorted(Comparator.comparing(Booking::getStart).reversed())
-                                .collect(Collectors.toList()));
+                        return bookingsDto.stream()
+                                .filter(e -> e.getBooker().getId().equals(userId))
+                                .collect(Collectors.toList());
                 case FUTURE:
                     if (isOwner)
-                        return BookingMapper.mapToBookingDto(bookingRepository.findAll()
-                                .stream().filter(e -> e.getStart().isAfter(LocalDateTime.now()))
-                                .filter(e -> e.getItem().getOwner().equals(userId))
-                                .sorted(Comparator.comparing(Booking::getStart).reversed()).collect(Collectors.toList()));
+                        return bookingsDto.stream()
+                                .filter(e -> e.getStart().isAfter(LocalDateTime.now()))
+                                .filter(e -> e.getItem().getOwner().equals(userId)).collect(Collectors.toList());
                     else
-                        return BookingMapper.mapToBookingDto(bookingRepository.findAll()
-                                .stream().filter(e -> e.getStart().isAfter(LocalDateTime.now()))
-                                .filter(e -> e.getBooker().getId().equals(userId))
-                                .sorted(Comparator.comparing(Booking::getStart).reversed()).collect(Collectors.toList()));
+                        return bookingsDto.stream()
+                                .filter(e -> e.getStart().isAfter(LocalDateTime.now()))
+                                .filter(e -> e.getBooker().getId().equals(userId)).collect(Collectors.toList());
                 case WAITING:
                     if (isOwner)
-                        return BookingMapper.mapToBookingDto(bookingRepository.findAll()
-                                .stream().filter(e -> e.getStatus().equals(Status.WAITING))
-                                .filter(e -> e.getItem().getOwner().equals(userId))
-                                .sorted(Comparator.comparing(Booking::getStart).reversed()).collect(Collectors.toList()));
+                        return bookingsDto.stream()
+                                .filter(e -> e.getStatus().equals(Status.WAITING))
+                                .filter(e -> e.getItem().getOwner().equals(userId)).collect(Collectors.toList());
                     else
-                        return BookingMapper.mapToBookingDto(bookingRepository.findAll()
-                                .stream().filter(e -> e.getStatus().equals(Status.WAITING))
-                                .filter(e -> e.getBooker().getId().equals(userId))
-                                .sorted(Comparator.comparing(Booking::getStart).reversed()).collect(Collectors.toList()));
+                        return bookingsDto.stream()
+                                .filter(e -> e.getStatus().equals(Status.WAITING))
+                                .filter(e -> e.getBooker().getId().equals(userId)).collect(Collectors.toList());
                 case REJECTED:
                     if (isOwner)
-                        return BookingMapper.mapToBookingDto(bookingRepository.findAll()
-                                .stream().filter(e -> e.getStatus().equals(Status.REJECTED))
-                                .filter(e -> e.getItem().getOwner().equals(userId))
-                                .sorted(Comparator.comparing(Booking::getStart).reversed()).collect(Collectors.toList()));
+                        return bookingsDto.stream()
+                                .filter(e -> e.getStatus().equals(Status.REJECTED))
+                                .filter(e -> e.getItem().getOwner().equals(userId)).collect(Collectors.toList());
                     else
-                        return BookingMapper.mapToBookingDto(bookingRepository.findAll()
-                                .stream().filter(e -> e.getStatus().equals(Status.REJECTED))
-                                .filter(e -> e.getBooker().getId().equals(userId))
-                                .sorted(Comparator.comparing(Booking::getStart).reversed()).collect(Collectors.toList()));
+                        return bookingsDto.stream()
+                                .filter(e -> e.getStatus().equals(Status.REJECTED))
+                                .filter(e -> e.getBooker().getId().equals(userId)).collect(Collectors.toList());
                 default:
                     throw new BookingException("Unknown state: " + state);
             }
