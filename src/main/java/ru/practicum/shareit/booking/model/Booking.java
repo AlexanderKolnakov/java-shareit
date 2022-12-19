@@ -61,18 +61,4 @@ public class Booking {
     public int hashCode() {
         return getClass().hashCode();
     }
-
-
-//    @Positive(message = "Некорректный номер id.")
-//    private Long id;
-//
-//    private LocalDate start;
-//
-//    private LocalDate end;
-//
-//    private Item item;
-//
-//    private User booker;
-//
-//    private Status status;
 }

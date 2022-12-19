@@ -3,6 +3,8 @@ package ru.practicum.shareit.item.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import ru.practicum.shareit.booking.dto.BookingItemDto;
 import ru.practicum.shareit.booking.model.Booking;
 
 @Data
@@ -18,7 +20,15 @@ public class ItemDto {
 
     private Long owner;
 
-    private Booking lastBooking;
+    private BookingItemDto lastBooking;
 
-    private Booking nextBooking;
+    private BookingItemDto nextBooking;
+
+    public ItemDto(Long id, String name, String description, Boolean available, Long owner) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.available = available;
+        this.owner = owner;
+    }
 }
