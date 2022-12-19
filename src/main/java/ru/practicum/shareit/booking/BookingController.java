@@ -40,11 +40,6 @@ public class BookingController {
         return bookingService.changeBookingStatus(userId, bookingId, approved);
     }
 
-
-
-
-
-
     @GetMapping("/{bookingId}")
     public BookingDto getBooking(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable Long bookingId) {
         log.debug("Получен GET запрос на получение информации о бронировании с id: " +
@@ -56,17 +51,8 @@ public class BookingController {
     public List<BookingDto> getAllBooking(@RequestHeader("X-Sharer-User-Id") Long userId,
                                           @RequestParam(name = "state", defaultValue = "ALL",
                                                   required = false) String state) {
-//        switch (state) {
-//            case ALL:
-//                log.debug("Получен GET запрос на получение информации обо всех бронированиях пользователя с id: {}.", userId);
-//                return bookingService.getAllBooking(userId);
-//            case PAST:
-//                return null;
-//            default:
-//                return null;
-//        }
         log.debug("Получен GET запрос на получение информации обо всех бронированиях пользователя с id: {}.", userId);
-        return bookingService.getAllBooking(userId, state);
+        return bookingService.getAllBooking(userId, state, false);
     }
 
     @GetMapping("/owner")
@@ -74,6 +60,6 @@ public class BookingController {
                                           @RequestParam(name = "state", defaultValue = "ALL",
                                                   required = false) String state) {
         log.debug("Получен GET запрос на получение информации обо всех бронированиях владельца с id: {}.", userId);
-        return bookingService.getAllBooking(userId, state);
+        return bookingService.getAllBooking(userId, state, true);
     }
 }
