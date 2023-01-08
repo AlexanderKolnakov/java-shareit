@@ -141,7 +141,7 @@ public class ItemServiceImpl implements ItemService {
     private ItemDto setComments(ItemDto itemDto) {
 
         List<Comment> commentList = commentRepository.searchCommentByItemId(itemDto.getId());
-        itemDto.setComments(CommentMapper.mapToCommentDto(commentList));
+//        itemDto.setComments(CommentMapper.mapToCommentDto(commentList));
         return itemDto;
     }
 
