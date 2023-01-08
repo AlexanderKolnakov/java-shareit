@@ -71,9 +71,11 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto getUserItem(Long ownerId, Long itemId) {
         Item item = itemRepository.getReferenceById(itemId);
 
-        if (item.getOwner().equals(ownerId)) {
-            return setComments(setLastAndNextBooking(item));
-        } else return setComments(ItemMapper.toItemDto(item));
+        return setComments(setLastAndNextBooking(item));
+
+//        if (item.getOwner().equals(ownerId)) {
+//            return setComments(setLastAndNextBooking(item));
+//        } else return setComments(ItemMapper.toItemDto(item));
     }
 
     @Override
