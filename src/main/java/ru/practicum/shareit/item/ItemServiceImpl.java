@@ -143,6 +143,7 @@ public class ItemServiceImpl implements ItemService {
             List<Comment> commentList = commentRepository.searchCommentByItemId(itemDto.getId());
             itemDto.setComments(CommentMapper.mapToCommentDto(commentList));
         } finally {
+            System.out.println("Тут тесты на сервере не проходят");
 
         }
         return itemDto;
