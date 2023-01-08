@@ -6,6 +6,7 @@ import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserUpdateDto;
 import ru.practicum.shareit.user.model.User;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
@@ -15,12 +16,14 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
+    @Transactional(rollbackOn = Exception.class)
     public UserDto createUser(User user) {
         User userResponse = userRepository.save(user);
         return UserMapper.toUserDto(userResponse);
     }
 
     @Override
+    @Transactional(rollbackOn = Exception.class)
     public UserDto updateUser(Long userId, UserUpdateDto userUpdateDto) {
 
         userUpdateDto.setId(userId);
@@ -42,6 +45,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(rollbackOn = Exception.class)
     public void deleteUser(Long userId) {
         userRepository.deleteById(userId);
     }

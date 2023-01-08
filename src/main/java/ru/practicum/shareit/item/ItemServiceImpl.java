@@ -34,6 +34,7 @@ public class ItemServiceImpl implements ItemService {
     private final CommentRepository commentRepository;
 
     @Override
+    @Transactional(rollbackOn = Exception.class)
     public ItemDto createItem(Long ownerId, Item item) {
         checkOwnerId(ownerId);
         item.setOwner(ownerId);
@@ -42,7 +43,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackOn = Exception.class)
     public ItemDto updateItem(Long ownerId, Long itemId, ItemUpdateDto itemUpdateDto) {
         checkOwnerId(ownerId);
         checkItemOwner(ownerId, itemId);
@@ -83,6 +84,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional(rollbackOn = Exception.class)
     public CommentDto createComment(Long authorId, Long itemId, Comment comment) {
         checkOwnerId(authorId);
 

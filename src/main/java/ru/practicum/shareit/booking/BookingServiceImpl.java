@@ -56,13 +56,9 @@ public class BookingServiceImpl implements BookingService {
         return BookingMapper.toBookingDto(bookingRepository.save(booking));
     }
 
-    private void checkBookerIsOwner(Long bookerId, Long owner) {
-        if (Objects.equals(bookerId, owner)) {
-            throw new EntityNotFoundException("Владелец вещи не может взять ее же в аренду.");
-        }
-    }
 
     @Override
+    @Transactional(rollbackOn = Exception.class)
     public BookingDto changeBookingStatus(Long userId, Long bookingId, Boolean approved) {
 
         checkMayUserApprovedBooking(userId, bookingId);
@@ -203,6 +199,12 @@ public class BookingServiceImpl implements BookingService {
     private void checkBookingAlreadyApproved(Long bookingId) {
         if (bookingRepository.getById(bookingId).getStatus().equals(Status.APPROVED)) {
             throw new BookingException("Статус бронирования с id " + bookingId + " уже подтвержден.");
+        }
+    }
+
+    private void checkBookerIsOwner(Long bookerId, Long owner) {
+        if (Objects.equals(bookerId, owner)) {
+            throw new EntityNotFoundException("Владелец вещи не может взять ее же в аренду.");
         }
     }
 }
