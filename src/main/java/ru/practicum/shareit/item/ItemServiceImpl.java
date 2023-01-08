@@ -19,6 +19,7 @@ import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -63,6 +64,7 @@ public class ItemServiceImpl implements ItemService {
 
         List<Item> itemList = itemRepository.findAll().stream()
                 .filter(e -> e.getOwner().equals(ownerId))
+                .sorted(Comparator.comparing(Item::getId))
                 .collect(Collectors.toList());
 
         return setLastAndNextBookingForListOfItems(itemList, ownerId);

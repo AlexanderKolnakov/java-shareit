@@ -160,6 +160,7 @@ public class BookingServiceImpl implements BookingService {
                                            final @NotNull Predicate<BookingDto> elseOwner) {
         if (isOwner)
             return bookingsDto.stream()
+                    .filter(bookingDto -> bookingDto.getItem().getOwner().equals(userId))
                     .filter(ifOwner::test)
                     .collect(Collectors.toList());
         else
