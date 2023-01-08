@@ -138,12 +138,8 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private ItemDto setComments(ItemDto itemDto) {
-        try {
-            List<Comment> commentList = commentRepository.searchCommentByItemId(itemDto.getId());
-            itemDto.setComments(CommentMapper.mapToCommentDto(commentList));
-        } catch (InternalError e) {
-            System.out.println("Тут тесты на сервере не проходят");
-        }
+        List<Comment> commentList = commentRepository.searchCommentByItemId(itemDto.getId());
+        itemDto.setComments(CommentMapper.mapToCommentDto(commentList));
         return itemDto;
     }
 
