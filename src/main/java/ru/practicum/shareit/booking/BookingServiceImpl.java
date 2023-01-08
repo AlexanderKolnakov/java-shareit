@@ -76,7 +76,6 @@ public class BookingServiceImpl implements BookingService {
         return BookingMapper.toBookingDto(bookingRepository.save(booking));
     }
 
-
     @Override
     public BookingDto getBooking(Long userId, Long bookingId) {
         checkBookerId(userId);
@@ -103,51 +102,25 @@ public class BookingServiceImpl implements BookingService {
                 return filterByState(isOwner, userId, bookingsDto,
                         bookingDto -> bookingDto.getItem().getOwner().equals(userId),
                         bookingDto -> true);
-//                if (isOwner)
-//                    return bookingsDto.stream()
-//                            .filter(e -> e.getItem().getOwner().equals(userId))
-//                            .collect(Collectors.toList());
-//                else
-//                    return bookingsDto.stream()
-//                            .filter(e -> e.getBooker().getId().equals(userId))
-//                            .collect(Collectors.toList());
             case FUTURE:
                 return filterByState(isOwner, userId, bookingsDto,
                         bookingDto -> bookingDto.getStart().isAfter(LocalDateTime.now())
                                 && bookingDto.getItem().getOwner().equals(userId),
                         bookingDto -> bookingDto.getStart().isAfter(LocalDateTime.now()));
-//            if (isOwner)
-//                return bookingsDto.stream()
-//                        .filter(e -> e.getStart().isAfter(LocalDateTime.now()))
-//                        .filter(e -> e.getItem().getOwner().equals(userId)).collect(Collectors.toList());
-//            else
-//                return bookingsDto.stream()
-//                        .filter(e -> e.getStart().isAfter(LocalDateTime.now()))
-//                        .filter(e -> e.getBooker().getId().equals(userId)).collect(Collectors.toList());
             case WAITING:
                 return filterByState(isOwner, userId, bookingsDto,
                         bookingDto -> bookingDto.getStatus().equals(Status.WAITING),
                         bookingDto -> bookingDto.getStatus().equals(Status.WAITING));
-//                if (isOwner)
-//                    return bookingsDto.stream()
-//                            .filter(e -> e.getStatus().equals(Status.WAITING))
-//                            .filter(e -> e.getItem().getOwner().equals(userId)).collect(Collectors.toList());
-//                else
-//                    return bookingsDto.stream()
-//                            .filter(e -> e.getStatus().equals(Status.WAITING))
-//                            .filter(e -> e.getBooker().getId().equals(userId)).collect(Collectors.toList());
             case REJECTED:
+            case CURRENT:
                 return filterByState(isOwner, userId, bookingsDto,
                         bookingDto -> bookingDto.getStatus().equals(Status.REJECTED),
                         bookingDto -> bookingDto.getStatus().equals(Status.REJECTED));
-//                if (isOwner)
-//                    return bookingsDto.stream()
-//                            .filter(e -> e.getStatus().equals(Status.REJECTED))
-//                            .filter(e -> e.getItem().getOwner().equals(userId)).collect(Collectors.toList());
-//                else
-//                    return bookingsDto.stream()
-//                            .filter(e -> e.getStatus().equals(Status.REJECTED))
-//                            .filter(e -> e.getBooker().getId().equals(userId)).collect(Collectors.toList());
+
+            case PAST:
+                return filterByState(isOwner, userId, bookingsDto,
+                        bookingDto -> bookingDto.getEnd().isBefore(LocalDateTime.now()),
+                        bookingDto -> bookingDto.getEnd().isBefore(LocalDateTime.now()));
             default:
                 throw new BookingException("Unknown state: " + state);
         }
@@ -168,8 +141,6 @@ public class BookingServiceImpl implements BookingService {
                     .filter(bookingDto -> bookingDto.getBooker().getId().equals(userId))
                     .filter(elseOwner::test)
                     .collect(Collectors.toList());
-
-
     }
 
     private State parseStatus(final @NotNull String state) {
@@ -181,7 +152,6 @@ public class BookingServiceImpl implements BookingService {
             throw new BookingException(errorMsg);
         }
     }
-
 
     private void checkAvailable(Item item) {
         if (item.getAvailable().equals(false)) {

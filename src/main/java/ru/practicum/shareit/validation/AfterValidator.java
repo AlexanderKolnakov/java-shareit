@@ -3,7 +3,6 @@ package ru.practicum.shareit.validation;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 public class AfterValidator implements ConstraintValidator<AfterNow, LocalDateTime> {
 

@@ -17,7 +17,7 @@ public class BookingDto {
 
     private LocalDateTime start;
 
-    private LocalDateTime  end;
+    private LocalDateTime end;
 
     private UserDto booker;
 

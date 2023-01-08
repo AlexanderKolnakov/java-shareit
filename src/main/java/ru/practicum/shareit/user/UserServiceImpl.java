@@ -2,12 +2,10 @@ package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exceptions.UserCreateException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserUpdateDto;
 import ru.practicum.shareit.user.model.User;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Service
@@ -18,7 +16,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto createUser(User user) {
-//        checkEmail(user);
         User userResponse = userRepository.save(user);
         return UserMapper.toUserDto(userResponse);
     }
@@ -47,11 +44,5 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(Long userId) {
         userRepository.deleteById(userId);
-    }
-
-    private void checkEmail(User user) {
-        if (!userRepository.getByEmail(user.getEmail()).isEmpty()) {
-            throw new UserCreateException("Пользователь с email " + user.getEmail() + " уже зарегистрирован.");
-        }
     }
 }

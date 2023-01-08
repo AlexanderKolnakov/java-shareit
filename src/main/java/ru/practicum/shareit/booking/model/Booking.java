@@ -1,17 +1,13 @@
 package ru.practicum.shareit.booking.model;
 
 import lombok.*;
-import org.aspectj.lang.annotation.Before;
 import org.hibernate.Hibernate;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.validation.AfterNow;
-import ru.practicum.shareit.validation.BeforeNow;
-
 
 import javax.persistence.*;
 import javax.validation.constraints.Positive;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 

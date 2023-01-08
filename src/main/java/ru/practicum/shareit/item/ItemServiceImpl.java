@@ -49,10 +49,6 @@ public class ItemServiceImpl implements ItemService {
         itemUpdateDto.setOwner(ownerId);
         itemUpdateDto.setId(itemId);
 
-
-//        itemRepository.findById(itemId)
-//                .map(item -> ItemMapper.toItem(itemUpdateDto, item))
-
         Item itemResponse = itemRepository.save(ItemMapper.toItem(itemUpdateDto,
                 itemRepository.getReferenceById(itemId)));
 
@@ -95,13 +91,8 @@ public class ItemServiceImpl implements ItemService {
 
         List<Booking> itemsBooking = bookingRepository.searchBookingByItemIdAndUserId(itemId, authorId);
 
-
         checkUserBookingItem(authorId, itemId);
-//
-//
-//        checkDataCommentCreate(comment.getCreated(), itemsBooking.get(itemsBooking.size()-1).getEnd());
         checkDataCommentCreate(comment.getCreated(), itemsBooking.get(0).getStart());
-
 
         comment.setAuthor(user);
         comment.setItem(item);
@@ -109,14 +100,6 @@ public class ItemServiceImpl implements ItemService {
         commentRepository.save(comment);
         return CommentMapper.toCommentDto(comment);
     }
-
-
-
-
-
-
-
-
 
     private Booking getLastBooking(List<Booking> itemsBooking) {
         Booking bookingResponse = itemsBooking.get(0);
@@ -138,7 +121,7 @@ public class ItemServiceImpl implements ItemService {
         return bookingResponse;
     }
 
-    private ItemDto setLastAndNextBooking (Item item) {
+    private ItemDto setLastAndNextBooking(Item item) {
         List<Booking> itemsBooking = bookingRepository.searchBookingByItemId(item.getId());
         ItemDto itemDto = ItemMapper.toItemDto(item);
 
@@ -159,9 +142,7 @@ public class ItemServiceImpl implements ItemService {
         return itemDto;
     }
 
-
-
-    private List<ItemDto> setLastAndNextBookingForListOfItems (List<Item> items, Long ownerId) {
+    private List<ItemDto> setLastAndNextBookingForListOfItems(List<Item> items, Long ownerId) {
         List<ItemDto> itemDtoList = new ArrayList<>();
 
         for (Item item : items) {
@@ -172,26 +153,13 @@ public class ItemServiceImpl implements ItemService {
         return itemDtoList;
     }
 
-//    private void checkDataCommentCreate(LocalDateTime checkDataEnd, LocalDateTime dataEnd) {
-//        if (checkDataEnd.isBefore(dataEnd)) {
-//            throw new BookingException("Нельзя оставлять комментарий, пока срок аренды не истек.");
-//        }
-//    }
-
     private void checkDataCommentCreate(LocalDateTime checkCommentData, LocalDateTime dataStart) {
         if (checkCommentData.isBefore(dataStart)) {
-            throw new BookingException("checkCommentData - "  + checkCommentData +
+            throw new BookingException("checkCommentData - " + checkCommentData +
                     "dataStart - " + dataStart +
                     " Нельзя оставлять комментарий, до начала аренды.");
         }
     }
-
-
-//    private void checkUserBookingItem (Long userId, Booking itemsBooking) {
-//        if (!(itemsBooking.getBooker().getId().equals(userId))) {
-//            throw new BookingException("Пользователя с id " + userId + " не брал эту вещ в аренду.");
-//        }
-//    }
 
     private void checkOwnerId(Long ownerId) {
         if (userRepository.findById(ownerId).isEmpty()) {
@@ -205,7 +173,7 @@ public class ItemServiceImpl implements ItemService {
         }
     }
 
-    private void checkUserBookingItem (Long userId, Long itemId) {
+    private void checkUserBookingItem(Long userId, Long itemId) {
         if (!((bookingRepository.searchBookingByItemIdAndUserId(itemId, userId).size()) > 0)) {
             throw new BookingException("Пользователя с id " + userId + " не брал эту вещ в аренду.");
         }

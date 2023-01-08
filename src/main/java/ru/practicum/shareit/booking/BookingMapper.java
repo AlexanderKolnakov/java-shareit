@@ -34,8 +34,8 @@ public class BookingMapper {
         return result;
     }
 
-    public static Booking toBookingFromBookingRequestDto (BookingRequestDto bookingRequestDto, Item item, User user) {
-        return new Booking (
+    public static Booking toBookingFromBookingRequestDto(BookingRequestDto bookingRequestDto, Item item, User user) {
+        return new Booking(
                 bookingRequestDto.getId(),
                 bookingRequestDto.getStart(),
                 bookingRequestDto.getEnd(),

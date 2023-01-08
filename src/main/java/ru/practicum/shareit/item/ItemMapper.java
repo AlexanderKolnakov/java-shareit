@@ -21,7 +21,6 @@ public class ItemMapper {
         );
     }
 
-
     public static List<ItemDto> mapToItemDto(Iterable<Item> items) {
         List<ItemDto> result = new ArrayList<>();
 
