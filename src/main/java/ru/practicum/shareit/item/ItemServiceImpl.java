@@ -156,9 +156,7 @@ public class ItemServiceImpl implements ItemService {
 
     private void checkDataCommentCreate(LocalDateTime checkCommentData, LocalDateTime dataStart) {
         if (checkCommentData.isBefore(dataStart)) {
-            throw new BookingException("checkCommentData - " + checkCommentData +
-                    "dataStart - " + dataStart +
-                    " Нельзя оставлять комментарий, до начала аренды.");
+            throw new BookingException("Нельзя оставлять комментарий, до начала аренды.");
         }
     }
 
