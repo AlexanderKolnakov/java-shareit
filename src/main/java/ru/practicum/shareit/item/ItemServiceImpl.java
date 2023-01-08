@@ -90,15 +90,18 @@ public class ItemServiceImpl implements ItemService {
     public CommentDto createComment(Long authorId, Long itemId, Comment comment) {
         checkOwnerId(authorId);
 
-        Item item = itemRepository.getReferenceById(authorId);
+        Item item = itemRepository.getReferenceById(itemId);
         User user = userRepository.getReferenceById(authorId);
 
         List<Booking> itemsBooking = bookingRepository.searchBookingByItemIdAndUserId(itemId, authorId);
 
+
         checkUserBookingItem(authorId, itemId);
 //
 //
-//        checkDataCommentCreate(comment.getCreated(), itemsBooking.getEnd());
+//        checkDataCommentCreate(comment.getCreated(), itemsBooking.get(itemsBooking.size()-1).getEnd());
+        checkDataCommentCreate(comment.getCreated(), itemsBooking.get(0).getStart());
+
 
         comment.setAuthor(user);
         comment.setItem(item);
@@ -106,6 +109,14 @@ public class ItemServiceImpl implements ItemService {
         commentRepository.save(comment);
         return CommentMapper.toCommentDto(comment);
     }
+
+
+
+
+
+
+
+
 
     private Booking getLastBooking(List<Booking> itemsBooking) {
         Booking bookingResponse = itemsBooking.get(0);
@@ -161,11 +172,20 @@ public class ItemServiceImpl implements ItemService {
         return itemDtoList;
     }
 
-    private void checkDataCommentCreate(LocalDateTime checkDataEnd, LocalDateTime dataEnd) {
-        if (checkDataEnd.isBefore(dataEnd)) {
-            throw new BookingException("Нельзя оставлять комментарий, пока срок аренды не истек.");
+//    private void checkDataCommentCreate(LocalDateTime checkDataEnd, LocalDateTime dataEnd) {
+//        if (checkDataEnd.isBefore(dataEnd)) {
+//            throw new BookingException("Нельзя оставлять комментарий, пока срок аренды не истек.");
+//        }
+//    }
+
+    private void checkDataCommentCreate(LocalDateTime checkCommentData, LocalDateTime dataStart) {
+        if (checkCommentData.isBefore(dataStart)) {
+            throw new BookingException("checkCommentData - "  + checkCommentData +
+                    "dataStart - " + dataStart +
+                    " Нельзя оставлять комментарий, до начала аренды.");
         }
     }
+
 
 //    private void checkUserBookingItem (Long userId, Booking itemsBooking) {
 //        if (!(itemsBooking.getBooker().getId().equals(userId))) {

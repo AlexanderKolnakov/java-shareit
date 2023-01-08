@@ -36,6 +36,6 @@ public class Comment {
     @JoinColumn(name = "USER_ID")
     private User author;
 
-    @Transient
+    @JoinColumn(name = "CREATED_DATE")
     private LocalDateTime created;
 }
