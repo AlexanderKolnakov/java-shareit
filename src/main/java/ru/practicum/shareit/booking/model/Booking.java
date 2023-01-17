@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import org.hibernate.Hibernate;
 import ru.practicum.shareit.item.model.Item;
@@ -27,10 +28,12 @@ public class Booking {
 
     @Column(name = "START_DATE")
     @AfterNow(message = "Дата начала бронирования не может быть в прошлом.")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime start;
 
     @Column(name = "END_DATE")
     @AfterNow(message = "Дата окончания бронирования не может быть в прошлом.")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime end;
 
     @ManyToOne

@@ -1,9 +1,9 @@
 package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
-import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.user.dto.UserCreateDto;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserUpdateDto;
 import ru.practicum.shareit.user.model.User;
@@ -20,9 +20,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(rollbackOn = Exception.class)
-    public UserDto createUser(User user) {
+    public UserDto createUser(UserCreateDto user) {
         try {
-            User userResponse = userRepository.save(user);
+            User userResponse = UserMapper.toUser(user);
+            userRepository.save(userResponse);
             return UserMapper.toUserDto(userResponse);
 
         } catch (DataIntegrityViolationException e) {

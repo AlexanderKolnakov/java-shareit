@@ -4,8 +4,6 @@ import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 import java.util.Objects;
 
@@ -26,8 +24,6 @@ public class User {
 
     private String name;
 
-    @NotBlank(message = "Введите email.")
-    @Email(message = "Введен не корректный email.")
     private String email;
 
     @Override
