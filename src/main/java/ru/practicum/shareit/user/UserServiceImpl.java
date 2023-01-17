@@ -1,11 +1,14 @@
 package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
+import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserUpdateDto;
 import ru.practicum.shareit.user.model.User;
 
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.util.List;
 
@@ -18,17 +21,23 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(rollbackOn = Exception.class)
     public UserDto createUser(User user) {
-        User userResponse = userRepository.save(user);
-        return UserMapper.toUserDto(userResponse);
+        try {
+            User userResponse = userRepository.save(user);
+            return UserMapper.toUserDto(userResponse);
+
+        } catch (DataIntegrityViolationException e) {
+            throw new DataIntegrityViolationException("Пользователь с " + user.getEmail() + " уже зарегистрирован.");
+        }
     }
 
     @Override
     @Transactional(rollbackOn = Exception.class)
     public UserDto updateUser(Long userId, UserUpdateDto userUpdateDto) {
-
+        checkUserId(userId);
         userUpdateDto.setId(userId);
-        User userFromRepository = userRepository.getById(userId);
+        checkUserEmail(userUpdateDto.getEmail());
 
+        User userFromRepository = userRepository.getById(userId);
         return UserMapper.toUserDto(userRepository.save(UserMapper.toUser(userUpdateDto, userFromRepository)));
     }
 
@@ -40,6 +49,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getUser(Long userId) {
+        checkUserId(userId);
         User user = userRepository.getById(userId);
         return UserMapper.toUserDto(user);
     }
@@ -47,6 +57,19 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(rollbackOn = Exception.class)
     public void deleteUser(Long userId) {
+        checkUserId(userId);
         userRepository.deleteById(userId);
+    }
+
+    private void checkUserId(Long userId) {
+        if (userRepository.findById(userId).isEmpty()) {
+            throw new EntityNotFoundException("Пользователя с id " + userId + " не существует");
+        }
+    }
+
+    private void checkUserEmail(String email) {
+        if (!userRepository.getByEmail(email).isEmpty()) {
+            throw new DataIntegrityViolationException("Пользователь с " + email + " уже зарегистрирован.");
+        }
     }
 }

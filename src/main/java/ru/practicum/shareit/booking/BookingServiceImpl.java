@@ -130,12 +130,12 @@ public class BookingServiceImpl implements BookingService {
         if (isOwner)
             return bookingsDto.stream()
                     .filter(bookingDto -> bookingDto.getItem().getOwner().equals(userId))
-                    .filter(ifOwner::test)
+                    .filter(ifOwner)
                     .collect(Collectors.toList());
         else
             return bookingsDto.stream()
                     .filter(bookingDto -> bookingDto.getBooker().getId().equals(userId))
-                    .filter(elseOwner::test)
+                    .filter(elseOwner)
                     .collect(Collectors.toList());
     }
 

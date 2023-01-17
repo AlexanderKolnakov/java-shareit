@@ -1,6 +1,7 @@
 package ru.practicum.shareit.exceptions;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestHeaderException;
@@ -40,5 +41,12 @@ public class ErrorHandler {
     public ErrorResponse error400(final BookingException e) {
         log.info("400 {}", e.getMessage());
         return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
+    public String error500(final DataIntegrityViolationException e) {
+        log.info("500 {}", e.getMessage());
+        return e.getMessage();
     }
 }
