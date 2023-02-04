@@ -4,10 +4,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemUpdateDto;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -31,9 +35,9 @@ public class ItemController {
     @PatchMapping("/{itemId}")
     public ItemDto updateItem(@RequestHeader("X-Sharer-User-Id") Long ownerId,
                               @PathVariable Long itemId,
-                              @RequestBody Item item) {
+                              @RequestBody ItemUpdateDto itemUpdateDto) {
         log.debug("Получен PATCH запрос на обновление вещи с id: " + itemId + " у пользователя пользователя с id: " + ownerId);
-        return itemService.updateItem(ownerId, itemId, item);
+        return itemService.updateItem(ownerId, itemId, itemUpdateDto);
     }
 
     @GetMapping
@@ -56,5 +60,14 @@ public class ItemController {
         } else {
             return itemService.getItemSearchByDescription(text);
         }
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDto createComment(@RequestHeader("X-Sharer-User-Id") Long authorId,
+                                    @PathVariable Long itemId,
+                                    @RequestBody @Valid Comment comment) {
+        comment.setCreated(LocalDateTime.now());
+        log.debug("Получен POST запрос на создание комментария");
+        return itemService.createComment(authorId, itemId, comment);
     }
 }

@@ -1,30 +1,63 @@
 package ru.practicum.shareit.booking.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.*;
+import org.hibernate.Hibernate;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.validation.AfterNow;
 
-
+import javax.persistence.*;
 import javax.validation.constraints.Positive;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Objects;
 
-@Data
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 @AllArgsConstructor
-@NoArgsConstructor
+@Entity
+@Table(name = "BOOKINGS")
 public class Booking {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Positive(message = "Некорректный номер id.")
     private Long id;
 
-    private LocalDate start;
+    @Column(name = "START_DATE")
+    @AfterNow(message = "Дата начала бронирования не может быть в прошлом.")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime start;
 
-    private LocalDate end;
+    @Column(name = "END_DATE")
+    @AfterNow(message = "Дата окончания бронирования не может быть в прошлом.")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime end;
 
+    @ManyToOne
+    @JoinColumn(name = "ITEM_ID")
     private Item item;
 
+    @ManyToOne
+    @JoinColumn(name = "USER_ID")
     private User booker;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "STATUS")
     private Status status;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Booking booking = (Booking) o;
+        return id != null && Objects.equals(id, booking.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

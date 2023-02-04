@@ -1,31 +1,30 @@
 package ru.practicum.shareit.booking.dto;
 
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import ru.practicum.shareit.booking.model.Status;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.validation.AfterNow;
 
 import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
-public class BookingDto {
+public class BookingRequestDto {
 
     private Long id;
 
+    @AfterNow(message = "Дата начала бронирования не может быть в прошлом.")
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime start;
 
+    @AfterNow(message = "Дата окончания бронирования не может быть в прошлом.")
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime end;
 
-    private UserDto booker;
+    private Long bookerId;
 
     private Status status;
 
-    private ItemDto item;
-
+    private Long itemId;
 }
