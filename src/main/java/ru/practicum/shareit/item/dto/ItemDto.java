@@ -27,11 +27,24 @@ public class ItemDto {
 
     private List<CommentDto> comments = new ArrayList<>();
 
+    private Long requestId;
+
+
     public ItemDto(Long id, String name, String description, Boolean available, Long owner) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.available = available;
         this.owner = owner;
+    }
+
+    public ItemDto(Long id, String name, String description, Boolean available, Long owner, Long requestId) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.available = available;
+        this.owner = owner;
+        this.requestId = requestId;
+
     }
 }

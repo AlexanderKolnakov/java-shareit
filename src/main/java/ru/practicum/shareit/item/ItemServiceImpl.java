@@ -1,6 +1,10 @@
 package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.BookingMapper;
 import ru.practicum.shareit.booking.BookingRepository;
@@ -38,7 +42,10 @@ public class ItemServiceImpl implements ItemService {
         checkOwnerId(ownerId);
         item.setOwner(ownerId);
         Item itemResponse = itemRepository.save(item);
-        return ItemMapper.toItemDto(itemResponse);
+        if (itemResponse.getRequestId() != null) {
+            return ItemMapper.toItemDtoWithRequest(itemResponse);
+        } else
+            return ItemMapper.toItemDto(itemResponse);
     }
 
     @Override
@@ -56,14 +63,24 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> findAllItem(Long ownerId) {
+    public List<ItemDto> findAllItem(Long ownerId, int from, int size) {
 
-        List<Item> itemList = itemRepository.findAll().stream()
-                .filter(e -> e.getOwner().equals(ownerId))
-                .sorted(Comparator.comparing(Item::getId))
-                .collect(Collectors.toList());
+        try {
+            Pageable pageable = PageRequest.of(from, size);
 
-        return setLastAndNextBookingForListOfItems(itemList, ownerId);
+            Page<Item> itemPage = itemRepository.findAll(pageable);
+
+            List<Item> itemList = itemPage.stream()
+                    .filter(e -> e.getOwner().equals(ownerId))
+                    .sorted(Comparator.comparing(Item::getId))
+                    .collect(Collectors.toList());
+
+            return setLastAndNextBookingForListOfItems(itemList, ownerId);
+
+        } catch (IllegalArgumentException e) {
+            throw new DataIntegrityViolationException("Не правильно указаны индексы искомых запросов: "
+                    + from + " и " + size);
+        }
     }
 
     @Override
@@ -76,10 +93,26 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> getItemSearchByDescription(String text) {
-        return ItemMapper.mapToItemDto(itemRepository.searchItemsByText(text))
-                .stream().filter(e -> e.getAvailable().equals(true))
-                .collect(Collectors.toList());
+    public List<ItemDto> getItemSearchByDescription(String text, int from, int size) {
+        try {
+            Pageable pageable = PageRequest.of(from, size);
+
+            // ДОРАБОТАТЬ
+
+            List<Item> itemPage = itemRepository.searchItemsByText(text);
+
+
+
+            return ItemMapper.mapToItemDto(itemRepository.searchItemsByText(text))
+                    .stream().filter(e -> e.getAvailable().equals(true))
+                    .collect(Collectors.toList());
+
+
+
+        } catch (IllegalArgumentException e) {
+            throw new DataIntegrityViolationException("Не правильно указаны индексы искомых запросов: "
+                    + from + " и " + size);
+        }
     }
 
     @Override

@@ -21,11 +21,31 @@ public class ItemMapper {
         );
     }
 
+    public static ItemDto toItemDtoWithRequest (Item item) {
+        return new ItemDto(
+                item.getId(),
+                item.getName(),
+                item.getDescription(),
+                item.getAvailable(),
+                item.getOwner(),
+                item.getRequestId()
+        );
+    }
+
     public static List<ItemDto> mapToItemDto(Iterable<Item> items) {
         List<ItemDto> result = new ArrayList<>();
 
         for (Item item : items) {
             result.add(toItemDto(item));
+        }
+        return result;
+    }
+
+    public static List<ItemDto> mapToItemDtoWithRequest (Iterable<Item> items) {
+        List<ItemDto> result = new ArrayList<>();
+
+        for (Item item : items) {
+            result.add(toItemDtoWithRequest(item));
         }
         return result;
     }

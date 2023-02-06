@@ -2,6 +2,10 @@ package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
@@ -81,44 +85,55 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getAllBooking(Long userId, String state, Boolean isOwner) {
+    public List<BookingDto> getAllBooking(Long userId, String state, Boolean isOwner, int from, int size) {
+        try {
+            Pageable pageable = PageRequest.of(from, size);
+            checkBookerId(userId);
 
-        checkBookerId(userId);
+            final State stateCorrect = parseStatus(state);
 
-        final State stateCorrect = parseStatus(state);
+//            Page<Booking> bookingsPage = bookingRepository.findAll(pageable);
 
-        final List<BookingDto> bookingsDto = BookingMapper.mapToBookingDto(bookingRepository.findAll()
-                .stream()
-                .sorted(Comparator.comparing(Booking::getStart).reversed())
-                .collect(Collectors.toList()));
+            Page<Booking> bookingsPage = bookingRepository.findAll(pageable);
 
-        switch (stateCorrect) {
+            Page<Booking> bookingsPage1 =
 
-            case ALL:
-                return filterByState(isOwner, userId, bookingsDto,
-                        bookingDto -> bookingDto.getItem().getOwner().equals(userId),
-                        bookingDto -> true);
-            case FUTURE:
-                return filterByState(isOwner, userId, bookingsDto,
-                        bookingDto -> bookingDto.getStart().isAfter(LocalDateTime.now())
-                                && bookingDto.getItem().getOwner().equals(userId),
-                        bookingDto -> bookingDto.getStart().isAfter(LocalDateTime.now()));
-            case WAITING:
-                return filterByState(isOwner, userId, bookingsDto,
-                        bookingDto -> bookingDto.getStatus().equals(Status.WAITING),
-                        bookingDto -> bookingDto.getStatus().equals(Status.WAITING));
-            case REJECTED:
-            case CURRENT:
-                return filterByState(isOwner, userId, bookingsDto,
-                        bookingDto -> bookingDto.getStatus().equals(Status.REJECTED),
-                        bookingDto -> bookingDto.getStatus().equals(Status.REJECTED));
+            final List<BookingDto> bookingsDto = BookingMapper.mapToBookingDto(bookingsPage
+                    .stream()
+                    .sorted(Comparator.comparing(Booking::getStart).reversed())
+                    .collect(Collectors.toList()));
 
-            case PAST:
-                return filterByState(isOwner, userId, bookingsDto,
-                        bookingDto -> bookingDto.getEnd().isBefore(LocalDateTime.now()),
-                        bookingDto -> bookingDto.getEnd().isBefore(LocalDateTime.now()));
-            default:
-                throw new BookingException("Unknown state: " + state);
+            switch (stateCorrect) {
+
+                case ALL:
+                    return filterByState(isOwner, userId, bookingsDto,
+                            bookingDto -> bookingDto.getItem().getOwner().equals(userId),
+                            bookingDto -> true);
+                case FUTURE:
+                    return filterByState(isOwner, userId, bookingsDto,
+                            bookingDto -> bookingDto.getStart().isAfter(LocalDateTime.now())
+                                    && bookingDto.getItem().getOwner().equals(userId),
+                            bookingDto -> bookingDto.getStart().isAfter(LocalDateTime.now()));
+                case WAITING:
+                    return filterByState(isOwner, userId, bookingsDto,
+                            bookingDto -> bookingDto.getStatus().equals(Status.WAITING),
+                            bookingDto -> bookingDto.getStatus().equals(Status.WAITING));
+                case REJECTED:
+                case CURRENT:
+                    return filterByState(isOwner, userId, bookingsDto,
+                            bookingDto -> bookingDto.getStatus().equals(Status.REJECTED),
+                            bookingDto -> bookingDto.getStatus().equals(Status.REJECTED));
+
+                case PAST:
+                    return filterByState(isOwner, userId, bookingsDto,
+                            bookingDto -> bookingDto.getEnd().isBefore(LocalDateTime.now()),
+                            bookingDto -> bookingDto.getEnd().isBefore(LocalDateTime.now()));
+                default:
+                    throw new BookingException("Unknown state: " + state);
+            }
+        } catch (IllegalArgumentException e) {
+            throw new DataIntegrityViolationException("Не правильно указаны индексы искомых запросов: "
+                    + from + " и " + size);
         }
     }
 
