@@ -18,12 +18,8 @@ import ru.practicum.shareit.user.model.User;
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -85,67 +81,64 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<BookingDto> getAllBooking(Long userId, String state, Boolean isOwner, int from, int size) {
         checkBookerId(userId);
-
         try {
-            Pageable pageable = PageRequest.of((from / size), size, Sort.by("start").descending());
-
-            final State stateCorrect = parseStatus(state);
-
-            List<Booking> bookingsPage = bookingRepository.findAll();
-
-            final List<BookingDto> bookingsDto = BookingMapper.mapToBookingDto(bookingsPage);
-//                    .stream()
-//                    .sorted(Comparator.comparing(BookingDto::getStart).reversed())
-//                    .collect(Collectors.toList());
-
-            switch (stateCorrect) {
-                case ALL:
-                    return filterByState(isOwner, userId, bookingsDto,
-                            bookingDto -> bookingDto.getItem().getOwner().equals(userId),
-                            bookingDto -> true);
-                case FUTURE:
-                    return filterByState(isOwner, userId, bookingsDto,
-                            bookingDto -> bookingDto.getStart().isAfter(LocalDateTime.now())
-                                    && bookingDto.getItem().getOwner().equals(userId),
-                            bookingDto -> bookingDto.getStart().isAfter(LocalDateTime.now()));
-                case WAITING:
-                    return filterByState(isOwner, userId, bookingsDto,
-                            bookingDto -> bookingDto.getStatus().equals(Status.WAITING),
-                            bookingDto -> bookingDto.getStatus().equals(Status.WAITING));
-                case REJECTED:
-                case CURRENT:
-                    return filterByState(isOwner, userId, bookingsDto,
-                            bookingDto -> bookingDto.getStatus().equals(Status.REJECTED),
-                            bookingDto -> bookingDto.getStatus().equals(Status.REJECTED));
-
-                case PAST:
-                    return filterByState(isOwner, userId, bookingsDto,
-                            bookingDto -> bookingDto.getEnd().isBefore(LocalDateTime.now()),
-                            bookingDto -> bookingDto.getEnd().isBefore(LocalDateTime.now()));
-                default:
-                    throw new BookingException("Unknown state: " + state);
-            }
+            Pageable pageableCheck = PageRequest.of(from, size);
         } catch (IllegalArgumentException e) {
             throw new DataIntegrityViolationException("Не правильно указаны индексы искомых запросов: "
                     + from + " и " + size);
         }
-    }
 
-    private List<BookingDto> filterByState(boolean isOwner,
-                                           final @NotNull Long userId,
-                                           final @NotNull List<BookingDto> bookingsDto,
-                                           final @NotNull Predicate<BookingDto> ifOwner,
-                                           final @NotNull Predicate<BookingDto> elseOwner) {
-        if (isOwner)
-            return bookingsDto.stream()
-                    .filter(bookingDto -> bookingDto.getItem().getOwner().equals(userId))
-                    .filter(ifOwner)
-                    .collect(Collectors.toList());
-        else
-            return bookingsDto.stream()
-                    .filter(bookingDto -> bookingDto.getBooker().getId().equals(userId))
-                    .filter(elseOwner)
-                    .collect(Collectors.toList());
+        Pageable pageable = PageRequest.of((from / size), size, Sort.by("start").descending());
+
+        final State stateCorrect = parseStatus(state);
+        Page<Booking> bookingsPage;
+
+        switch (stateCorrect) {
+            case ALL:
+                if (isOwner) {
+                    bookingsPage = bookingRepository.findAllByOwner(userId, pageable);
+                } else {
+                    bookingsPage = bookingRepository.findAllByOtherUser(userId, pageable);
+                }
+                return BookingMapper.mapToBookingDto(bookingsPage);
+
+            case FUTURE:
+
+                if (isOwner) {
+                    bookingsPage = bookingRepository.findFutureByOwner(userId, pageable);
+                } else {
+                    bookingsPage = bookingRepository.findFutureByOtherUser(userId, pageable);
+                }
+                return BookingMapper.mapToBookingDto(bookingsPage);
+
+            case WAITING:
+                if (isOwner) {
+                    bookingsPage = bookingRepository.findByStatusAndByOwner(userId, Status.WAITING, pageable);
+                } else {
+                    bookingsPage = bookingRepository.findByStatusAndByOtherUser(userId, Status.WAITING, pageable);
+                }
+                return BookingMapper.mapToBookingDto(bookingsPage);
+
+            case REJECTED:
+            case CURRENT:
+                if (isOwner) {
+                    bookingsPage = bookingRepository.findByStatusAndByOwner(userId, Status.REJECTED, pageable);
+                } else {
+                    bookingsPage = bookingRepository.findByStatusAndByOtherUser(userId, Status.REJECTED, pageable);
+                }
+                return BookingMapper.mapToBookingDto(bookingsPage);
+
+            case PAST:
+                if (isOwner) {
+                    bookingsPage = bookingRepository.findPastByOwner(userId, pageable);
+                } else {
+                    bookingsPage = bookingRepository.findPastByOtherUser(userId, pageable);
+                }
+                return BookingMapper.mapToBookingDto(bookingsPage);
+
+            default:
+                throw new BookingException("Unknown state: " + state);
+        }
     }
 
     private State parseStatus(final @NotNull String state) {
