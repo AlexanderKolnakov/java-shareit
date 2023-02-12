@@ -3,9 +3,7 @@ package ru.practicum.shareit.booking;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
@@ -86,29 +84,38 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingDto> getAllBooking(Long userId, String state, Boolean isOwner, int from, int size) {
+        checkBookerId(userId);
+
         try {
-            Pageable pageable = PageRequest.of(from, size);
-            checkBookerId(userId);
+            Pageable pageable = PageRequest.of((from / size), size, Sort.by("start").descending());
 
             final State stateCorrect = parseStatus(state);
 
-//            Page<Booking> bookingsPage = bookingRepository.findAll(pageable);
+            List<Booking> bookingsPage = bookingRepository.findAll();
 
-            Page<Booking> bookingsPage = bookingRepository.findAll(pageable);
-
-            Page<Booking> bookingsPage1 =
-
-            final List<BookingDto> bookingsDto = BookingMapper.mapToBookingDto(bookingsPage
-                    .stream()
-                    .sorted(Comparator.comparing(Booking::getStart).reversed())
-                    .collect(Collectors.toList()));
+            final List<BookingDto> bookingsDto = BookingMapper.mapToBookingDto(bookingsPage);
+//                    .stream()
+//                    .sorted(Comparator.comparing(BookingDto::getStart).reversed())
+//                    .collect(Collectors.toList());
 
             switch (stateCorrect) {
 
                 case ALL:
-                    return filterByState(isOwner, userId, bookingsDto,
+
+
+                    // тут получили список из которого нужно сделать пагинацию
+                    List<BookingDto> res = filterByState(isOwner, userId, bookingsDto,
                             bookingDto -> bookingDto.getItem().getOwner().equals(userId),
                             bookingDto -> true);
+
+
+                    // получаем нужную страницу
+                    Page<BookingDto> pages = new PageImpl<BookingDto>(res, pageable, res.size());
+
+
+                    // перевод страницы в лист. Скорее всего тут не правильно перевожу
+                    return pages.getContent();
+
                 case FUTURE:
                     return filterByState(isOwner, userId, bookingsDto,
                             bookingDto -> bookingDto.getStart().isAfter(LocalDateTime.now())
