@@ -99,23 +99,10 @@ public class BookingServiceImpl implements BookingService {
 //                    .collect(Collectors.toList());
 
             switch (stateCorrect) {
-
                 case ALL:
-
-
-                    // тут получили список из которого нужно сделать пагинацию
-                    List<BookingDto> res = filterByState(isOwner, userId, bookingsDto,
+                    return filterByState(isOwner, userId, bookingsDto,
                             bookingDto -> bookingDto.getItem().getOwner().equals(userId),
                             bookingDto -> true);
-
-
-                    // получаем нужную страницу
-                    Page<BookingDto> pages = new PageImpl<BookingDto>(res, pageable, res.size());
-
-
-                    // перевод страницы в лист. Скорее всего тут не правильно перевожу
-                    return pages.getContent();
-
                 case FUTURE:
                     return filterByState(isOwner, userId, bookingsDto,
                             bookingDto -> bookingDto.getStart().isAfter(LocalDateTime.now())
