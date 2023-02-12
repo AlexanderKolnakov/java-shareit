@@ -29,22 +29,6 @@ public class UserMapper {
         return result;
     }
 
-    public static User toUser(UserUpdateDto userUpdateDto, User userFromRepository) {
-        User user =  new User();
-        user.setId(userUpdateDto.getId());
-        if (userUpdateDto.getName() != null) {
-            user.setName(userUpdateDto.getName());
-        } else {
-            user.setName(userFromRepository.getName());
-        }
-        if (userUpdateDto.getEmail() != null) {
-            user.setEmail(userUpdateDto.getEmail());
-        } else {
-            user.setEmail(userFromRepository.getEmail());
-        }
-        return user;
-    }
-
     public static User toUser(UserCreateDto userCreateDto) {
         User user =  new User();
         user.setId(userCreateDto.getId());

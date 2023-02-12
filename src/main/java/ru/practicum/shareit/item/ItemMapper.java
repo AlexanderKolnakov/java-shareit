@@ -21,7 +21,7 @@ public class ItemMapper {
         );
     }
 
-    public static ItemDto toItemDtoWithRequest (Item item) {
+    public static ItemDto toItemDtoWithRequest(Item item) {
         return new ItemDto(
                 item.getId(),
                 item.getName(),
@@ -41,7 +41,7 @@ public class ItemMapper {
         return result;
     }
 
-    public static List<ItemDto> mapToItemDtoWithRequest (Iterable<Item> items) {
+    public static List<ItemDto> mapToItemDtoWithRequest(Iterable<Item> items) {
         List<ItemDto> result = new ArrayList<>();
 
         for (Item item : items) {

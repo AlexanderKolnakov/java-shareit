@@ -34,13 +34,15 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(rollbackOn = Exception.class)
     public UserDto updateUser(Long userId, UserUpdateDto userUpdateDto) {
-        checkUserId(userId);
         userUpdateDto.setId(userId);
         checkUserEmail(userUpdateDto.getEmail());
 
-        User userFromRepository = userRepository.getById(userId);
-        return UserMapper.toUserDto(userRepository.save(UserMapper.toUser(userUpdateDto, userFromRepository)));
+        final User userFromRepository = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Пользователя с id " + userId + " не существует"));
+        updateUserInfo(userUpdateDto, userFromRepository);
+        return UserMapper.toUserDto(userRepository.save(userFromRepository));
     }
+
 
     @Override
     public List<UserDto> findAll() {
@@ -50,27 +52,32 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getUser(Long userId) {
-        checkUserId(userId);
-        User user = userRepository.getById(userId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Пользователя с id " + userId + " не существует"));
         return UserMapper.toUserDto(user);
     }
 
     @Override
     @Transactional(rollbackOn = Exception.class)
     public void deleteUser(Long userId) {
-        checkUserId(userId);
+        userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Пользователя с id " + userId + " не существует"));
         userRepository.deleteById(userId);
     }
 
-    private void checkUserId(Long userId) {
-        if (userRepository.findById(userId).isEmpty()) {
-            throw new EntityNotFoundException("Пользователя с id " + userId + " не существует");
-        }
-    }
 
     private void checkUserEmail(String email) {
         if (!userRepository.getByEmail(email).isEmpty()) {
             throw new DataIntegrityViolationException("Пользователь с " + email + " уже зарегистрирован.");
+        }
+    }
+
+    private void updateUserInfo(UserUpdateDto userUpdateDto, User userFromRepository) {
+        if (userUpdateDto.getName() != null) {
+            userFromRepository.setName(userUpdateDto.getName());
+        }
+        if (userUpdateDto.getEmail() != null) {
+            userFromRepository.setEmail(userUpdateDto.getEmail());
         }
     }
 }
