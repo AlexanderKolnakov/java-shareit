@@ -1,12 +1,11 @@
 package ru.practicum.shareit.item;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemUpdateDto;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 
@@ -18,7 +17,7 @@ import java.util.List;
 
 @RestController
 @Slf4j
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Validated
 @RequestMapping("/items")
 public class ItemController {
@@ -26,7 +25,7 @@ public class ItemController {
     private final ItemService itemService;
 
     @PostMapping()
-    public ItemDto createUser(@RequestHeader("X-Sharer-User-Id") Long ownerId,
+    public ItemDto createItem(@RequestHeader("X-Sharer-User-Id") Long ownerId,
                               @RequestBody @Valid Item item) {
         log.debug("Получен POST запрос на создание вещи");
         return itemService.createItem(ownerId, item);
@@ -35,7 +34,7 @@ public class ItemController {
     @PatchMapping("/{itemId}")
     public ItemDto updateItem(@RequestHeader("X-Sharer-User-Id") Long ownerId,
                               @PathVariable Long itemId,
-                              @RequestBody ItemUpdateDto itemUpdateDto) {
+                              @RequestBody ItemDto itemUpdateDto) {
         log.debug("Получен PATCH запрос на обновление вещи с id: " + itemId + " у пользователя пользователя с id: " + ownerId);
         return itemService.updateItem(ownerId, itemId, itemUpdateDto);
     }
@@ -49,7 +48,8 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto findUserItem(@RequestHeader("X-Sharer-User-Id") Long ownerId, @PathVariable Long itemId) {
+    public ItemDto findUserItem(@RequestHeader("X-Sharer-User-Id") Long ownerId,
+                                @PathVariable Long itemId) {
         log.debug("Получен GET запрос на получение вещи с id: " + itemId + " у пользователя с id: {}.", ownerId);
         return itemService.getUserItem(ownerId, itemId);
     }

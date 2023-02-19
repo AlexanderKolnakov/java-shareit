@@ -10,7 +10,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
 import ru.practicum.shareit.user.dto.UserCreateDto;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.dto.UserUpdateDto;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.EntityNotFoundException;
@@ -75,7 +74,7 @@ class UserServiceImplTest {
         oldUser.setName("Old");
         oldUser.setEmail("Old@mail.com");
 
-        UserUpdateDto newUserDto = new UserUpdateDto();
+        UserDto newUserDto = new UserDto();
         newUserDto.setName("New");
         oldUser.setEmail("New@mail.com");
         when(userRepository.findById(any())).thenReturn(Optional.of(oldUser));
@@ -98,7 +97,7 @@ class UserServiceImplTest {
         oldUser.setId(userId);
         oldUser.setEmail("Old@mail.com");
 
-        UserUpdateDto newUserDto = new UserUpdateDto();
+        UserDto newUserDto = new UserDto();
         newUserDto.setName("New");
         when(userRepository.getByEmail(any())).thenReturn(List.of(oldUser));
 
@@ -111,7 +110,7 @@ class UserServiceImplTest {
     @Test
     void updateUser_whenUserNotFound_thenReturnedEntityNotFoundException() {
         long userId = 0L;
-        UserUpdateDto updateUser = new UserUpdateDto();
+        UserDto updateUser = new UserDto();
 
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
@@ -141,7 +140,6 @@ class UserServiceImplTest {
         User expectedUser = new User();
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(expectedUser));
-
         UserDto actualUser = userService.getUser(userId);
 
         assertEquals(UserMapper.toUserDto(expectedUser), actualUser);
@@ -178,6 +176,5 @@ class UserServiceImplTest {
 
         assertEquals(entityNotFoundException.getMessage(), "Пользователя с id " + userId + " не существует");
         verify(userRepository, never()).deleteById(userId);
-
     }
 }

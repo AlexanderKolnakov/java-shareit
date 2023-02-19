@@ -1,6 +1,7 @@
 package ru.practicum.shareit.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,7 +13,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.practicum.shareit.user.dto.UserCreateDto;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.dto.UserUpdateDto;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -42,9 +42,6 @@ class UserControllerTest {
 
     private UserCreateDto userCreateDto;
 
-    private UserUpdateDto userUpdateDto;
-
-
 
     @BeforeEach
     void setUp() {
@@ -52,26 +49,22 @@ class UserControllerTest {
                 .standaloneSetup(userController)
                 .build();
 
-
         userDto = new UserDto(
                 1L,
-                "Some.User@mail.com",
-                "SomeUser");
+                "SomeUser",
+                "Some.User@mail.com");
 
         userCreateDto = new UserCreateDto(
                 1L,
                 "SomeUser",
                 "Some.User@mail.com");
 
-        userUpdateDto = new UserUpdateDto(
-                1L,
-                "SomeUser",
-                "Some.User@mail.com");
     }
 
     @Test
-    void createUser_whenInvoked_thenResponseStatusOkWithUserInBody() throws Exception {
-        when(userService.createUser(any()))
+    @SneakyThrows
+    void createUser_whenInvoked_thenResponseStatusOkWithUserInBody() {
+        when(userService.createUser(userCreateDto))
                 .thenReturn(userDto);
 
         mvc.perform(post("/users")
@@ -86,12 +79,14 @@ class UserControllerTest {
     }
 
     @Test
-    void updateUser_whenInvoked_thenResponseStatusOkWithUserInBody() throws Exception {
+    @SneakyThrows
+    void updateUser_whenInvoked_thenResponseStatusOkWithUserInBody() {
+        long userId = 1L;
         when(userService.updateUser(any(), any()))
                 .thenReturn(userDto);
 
-        mvc.perform(patch("/users/1")
-                        .content(mapper.writeValueAsString(userUpdateDto))
+        mvc.perform(patch("/users/{id}", userId)
+                        .content(mapper.writeValueAsString(userDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -102,7 +97,8 @@ class UserControllerTest {
     }
 
     @Test
-    void findAllUsers_whenInvoked_thenResponseStatusOkWithUserCollectionInBody () throws Exception {
+    @SneakyThrows
+    void findAllUsers_whenInvoked_thenResponseStatusOkWithUserCollectionInBody() {
         when(userService.findAll()).thenReturn(List.of(userDto));
 
         mvc.perform(get("/users"))
@@ -113,10 +109,12 @@ class UserControllerTest {
     }
 
     @Test
-    void findUser_whenInvoked_thenResponseStatusOkWithUserCollectionInBody() throws Exception {
+    @SneakyThrows
+    void findUser_whenInvoked_thenResponseStatusOkWithUserCollectionInBody() {
+        long userId = 1L;
         when(userService.getUser(any())).thenReturn(userDto);
 
-        mvc.perform(get("/users/1"))
+        mvc.perform(get("/users/{id}", userId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(userDto.getId()), Long.class))
                 .andExpect(jsonPath("$.name", is(userDto.getName())))
@@ -124,8 +122,10 @@ class UserControllerTest {
     }
 
     @Test
-    void deleteUser_whenInvoked_thenResponseStatusOk() throws Exception {
-        mvc.perform(delete("/users/1"))
+    @SneakyThrows
+    void deleteUser_whenInvoked_thenResponseStatusOk() {
+        long userId = 1L;
+        mvc.perform(delete("/users/{id}", userId))
                 .andExpect(status().isOk());
     }
 }

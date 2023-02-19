@@ -2,7 +2,6 @@ package ru.practicum.shareit.item;
 
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemUpdateDto;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.ArrayList;
@@ -50,7 +49,7 @@ public class ItemMapper {
         return result;
     }
 
-    public static Item toItem(ItemUpdateDto itemUpdateDto, Item itemFromRepository) {
+    public static Item toItem(ItemDto itemUpdateDto, Item itemFromRepository) {
         Item item = new Item();
         item.setId(itemUpdateDto.getId());
         if (itemUpdateDto.getName() != null) {

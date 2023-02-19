@@ -1,9 +1,10 @@
 package ru.practicum.shareit.booking;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.AllArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
@@ -22,8 +23,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
-@RequiredArgsConstructor
-@Slf4j
+@AllArgsConstructor
 public class BookingServiceImpl implements BookingService {
 
     private final BookingRepository bookingRepository;
@@ -91,7 +91,7 @@ public class BookingServiceImpl implements BookingService {
         Pageable pageable = PageRequest.of((from / size), size, Sort.by("start").descending());
 
         final State stateCorrect = parseStatus(state);
-        Page<Booking> bookingsPage;
+        List<Booking> bookingsPage;
 
         switch (stateCorrect) {
             case ALL:
@@ -146,7 +146,6 @@ public class BookingServiceImpl implements BookingService {
             return State.valueOf(state);
         } catch (IllegalArgumentException e) {
             final String errorMsg = "Unknown state: " + state;
-            log.error(errorMsg);
             throw new BookingException(errorMsg);
         }
     }

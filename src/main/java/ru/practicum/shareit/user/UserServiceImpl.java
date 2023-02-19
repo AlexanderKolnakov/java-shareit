@@ -1,11 +1,10 @@
 package ru.practicum.shareit.user;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.user.dto.UserCreateDto;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.dto.UserUpdateDto;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.EntityNotFoundException;
@@ -13,7 +12,7 @@ import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -33,7 +32,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(rollbackOn = Exception.class)
-    public UserDto updateUser(Long userId, UserUpdateDto userUpdateDto) {
+    public UserDto updateUser(Long userId, UserDto userUpdateDto) {
         userUpdateDto.setId(userId);
         checkUserEmail(userUpdateDto.getEmail());
 
@@ -72,7 +71,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private void updateUserInfo(UserUpdateDto userUpdateDto, User userFromRepository) {
+    private void updateUserInfo(UserDto userUpdateDto, User userFromRepository) {
         if (userUpdateDto.getName() != null) {
             userFromRepository.setName(userUpdateDto.getName());
         }
