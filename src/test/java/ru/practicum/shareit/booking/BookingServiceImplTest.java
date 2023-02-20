@@ -18,9 +18,6 @@ import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.exceptions.BookingException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.request.ItemRequestMapper;
-import ru.practicum.shareit.request.dto.ItemRequestDto;
-import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
@@ -29,7 +26,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -199,8 +197,8 @@ class BookingServiceImplTest {
         EntityNotFoundException entityNotFoundException = assertThrows(EntityNotFoundException.class,
                 () -> bookingService.changeBookingStatus(userId, bookingId, approved));
         assertEquals(entityNotFoundException.getMessage(), "Пользователь с id " + userId +
-                        " не может подтвердить бронирование этой вещи, " +
-                        "так как не является ее владельцем");
+                " не может подтвердить бронирование этой вещи, " +
+                "так как не является ее владельцем");
         verify(bookingRepository, never()).save(any());
     }
 
@@ -225,7 +223,7 @@ class BookingServiceImplTest {
         BookingException bookingException = assertThrows(BookingException.class,
                 () -> bookingService.changeBookingStatus(userId, bookingId, approved));
         assertEquals(bookingException.getMessage(), "Статус бронирования с id " + bookingId +
-                        " уже подтвержден.");
+                " уже подтвержден.");
         verify(bookingRepository, never()).save(any());
     }
 

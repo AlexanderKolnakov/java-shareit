@@ -29,7 +29,7 @@ public class UserMapper {
     }
 
     public static User toUser(UserCreateDto userCreateDto) {
-        User user =  new User();
+        User user = new User();
         user.setId(userCreateDto.getId());
         user.setName(userCreateDto.getName());
         user.setEmail(userCreateDto.getEmail());

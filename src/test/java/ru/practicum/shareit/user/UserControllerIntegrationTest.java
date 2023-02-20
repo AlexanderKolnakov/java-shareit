@@ -10,7 +10,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.user.dto.UserCreateDto;
 import ru.practicum.shareit.user.dto.UserDto;
 
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -38,8 +37,8 @@ class UserControllerIntegrationTest {
                 .thenReturn(UserMapper.toUserDto(UserMapper.toUser(userCreate)));
 
         String result = mockMvc.perform(post("/users")
-                .contentType("application/json")
-                .content(objectMapper.writeValueAsString(userCreate)))
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(userCreate)))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
