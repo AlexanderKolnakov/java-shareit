@@ -96,15 +96,9 @@ public class ItemServiceImpl implements ItemService {
         try {
             Pageable pageable = PageRequest.of(from, size);
 
-            // ДОРАБОТАТЬ
-
-            List<Item> itemPage = itemRepository.searchItemsByText(text);
-
-
-            return ItemMapper.mapToItemDto(itemRepository.searchItemsByText(text))
+            return ItemMapper.mapToItemDto(itemRepository.searchItemsByText(text, pageable))
                     .stream().filter(e -> e.getAvailable().equals(true))
                     .collect(Collectors.toList());
-
 
         } catch (IllegalArgumentException e) {
             throw new DataIntegrityViolationException("Не правильно указаны индексы искомых запросов: "

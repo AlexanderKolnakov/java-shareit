@@ -5,6 +5,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
@@ -23,6 +26,8 @@ class ItemRepositoryTest {
 
     Item itemTwo;
 
+    Pageable pageable = PageRequest.of(0, 20);
+
     @BeforeEach
     private void addItems() {
         itemOne = new Item(1L, "Some One Saw", "description by one mechanical axe", true, 1L, 1L);
@@ -39,7 +44,7 @@ class ItemRepositoryTest {
 
     @Test
     void searchItemsByTextInName() {
-        final List<Item> result = itemRepository.searchItemsByText("saw");
+        final List<Item> result = itemRepository.searchItemsByText("saw", pageable);
 
         assertEquals(1, result.size());
         assertEquals("Some One Saw", result.get(0).getName());
@@ -47,7 +52,7 @@ class ItemRepositoryTest {
 
     @Test
     void searchItemsByTextInDescription() {
-        final List<Item> result = itemRepository.searchItemsByText("aXe");
+        final List<Item> result = itemRepository.searchItemsByText("aXe", pageable);
 
         assertEquals(1, result.size());
         assertEquals("Some One Saw", result.get(0).getName());

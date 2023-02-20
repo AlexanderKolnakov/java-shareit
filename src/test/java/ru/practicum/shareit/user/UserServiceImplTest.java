@@ -76,7 +76,7 @@ class UserServiceImplTest {
 
         UserDto newUserDto = new UserDto();
         newUserDto.setName("New");
-        oldUser.setEmail("New@mail.com");
+        newUserDto.setEmail("New@mail.com");
         when(userRepository.findById(any())).thenReturn(Optional.of(oldUser));
         when(userRepository.getByEmail(any())).thenReturn(Collections.emptyList());
         when(userRepository.save(any())).thenReturn(oldUser);

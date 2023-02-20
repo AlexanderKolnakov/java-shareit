@@ -27,7 +27,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     private final ItemRequestRepository itemRequestRepository;
     private final UserRepository userRepository;
-
     private final ItemRepository itemRepository;
 
 
