@@ -87,7 +87,6 @@ public class BookingServiceImpl implements BookingService {
             throw new DataIntegrityViolationException("Не правильно указаны индексы искомых запросов: "
                     + from + " и " + size);
         }
-
         Pageable pageable = PageRequest.of((from / size), size, Sort.by("start").descending());
 
         final State stateCorrect = parseStatus(state);

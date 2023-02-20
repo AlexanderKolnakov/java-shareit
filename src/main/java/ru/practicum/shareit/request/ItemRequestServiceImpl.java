@@ -67,8 +67,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                 setItemForRequest(itemRequestDto);
             }
             return result;
-
-
         } catch (IllegalArgumentException e) {
             throw new DataIntegrityViolationException("Не правильно указаны индексы искомых запросов: "
                     + from + " и " + size);
