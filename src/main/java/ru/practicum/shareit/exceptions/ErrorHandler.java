@@ -15,13 +15,6 @@ import javax.persistence.EntityNotFoundException;
 @RestControllerAdvice
 public class ErrorHandler {
 
-    @ExceptionHandler
-    @ResponseStatus(value = HttpStatus.CONFLICT)
-    public String error409(final UserCreateException e) {
-        log.info("409 {}", e.getMessage());
-        return e.getMessage();
-    }
-
     @ExceptionHandler({MethodArgumentNotValidException.class, MissingRequestHeaderException.class})
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public String error400(final MethodArgumentNotValidException e) {
@@ -29,7 +22,7 @@ public class ErrorHandler {
         return e.getFieldError().getDefaultMessage();
     }
 
-    @ExceptionHandler({EntityNotFoundException.class, UserNotFoundException.class})
+    @ExceptionHandler({EntityNotFoundException.class})
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
     public String error404(final EntityNotFoundException e) {
         log.info("404 {}", e.getMessage());
