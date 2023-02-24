@@ -8,6 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
+import ru.practicum.shareit.exceptions.ConflictException;
 import ru.practicum.shareit.user.dto.UserCreateDto;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
@@ -68,7 +69,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void updateUser_whenUserCorrect_thenUserUpdate() {
+    void updateUser_whenUserCorrect_thenUserUpdate() throws ConflictException {
         Long userId = 1L;
         User oldUser = new User();
         oldUser.setId(userId);

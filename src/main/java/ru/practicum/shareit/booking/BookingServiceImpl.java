@@ -21,6 +21,7 @@ import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -75,7 +76,8 @@ public class BookingServiceImpl implements BookingService {
         checkBookerId(userId);
         checkBookingId(bookingId);
         checkMayUserGetBookingInfo(userId, bookingId);
-        return BookingMapper.toBookingDto(bookingRepository.getById(bookingId));
+        return BookingMapper.toBookingDto(bookingRepository.findById(bookingId)
+                .orElseThrow(EntityNotFoundException::new));
     }
 
     @Override
@@ -189,15 +191,16 @@ public class BookingServiceImpl implements BookingService {
     }
 
     private void checkMayUserGetBookingInfo(Long userId, Long bookingId) {
-        if (!(bookingRepository.getById(bookingId).getItem().getOwner().equals(userId)
-                || bookingRepository.getById(bookingId).getBooker().getId().equals(userId))) {
+        Booking checkBooking = bookingRepository.findById(bookingId).orElseThrow();
+        if (!(checkBooking.getItem().getOwner().equals(userId)
+                || checkBooking.getBooker().getId().equals(userId))) {
             throw new EntityNotFoundException("Пользователь с id " + userId + " не может получить информацию " +
                     "о бронировании с id  " + bookingId + " так как не является ее владельцем или арендатором");
         }
     }
 
     private void checkBookingAlreadyApproved(Long bookingId) {
-        if (bookingRepository.getById(bookingId).getStatus().equals(Status.APPROVED)) {
+        if (bookingRepository.findById(bookingId).orElseThrow().getStatus().equals(Status.APPROVED)) {
             throw new BookingException("Статус бронирования с id " + bookingId + " уже подтвержден.");
         }
     }

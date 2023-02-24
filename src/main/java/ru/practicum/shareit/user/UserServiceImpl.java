@@ -3,6 +3,7 @@ package ru.practicum.shareit.user;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exceptions.ConflictException;
 import ru.practicum.shareit.user.dto.UserCreateDto;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
@@ -26,7 +27,7 @@ public class UserServiceImpl implements UserService {
             return UserMapper.toUserDto(userResponse);
 
         } catch (DataIntegrityViolationException e) {
-            throw new DataIntegrityViolationException("Пользователь с " + user.getEmail() + " уже зарегистрирован.");
+            throw new ConflictException("Пользователь с " + user.getEmail() + " уже зарегистрирован.");
         }
     }
 
@@ -34,7 +35,6 @@ public class UserServiceImpl implements UserService {
     @Transactional(rollbackOn = Exception.class)
     public UserDto updateUser(Long userId, UserDto userUpdateDto) {
         userUpdateDto.setId(userId);
-        checkUserEmail(userUpdateDto.getEmail());
 
         final User userFromRepository = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("Пользователя с id " + userId + " не существует"));
@@ -67,7 +67,7 @@ public class UserServiceImpl implements UserService {
 
     private void checkUserEmail(String email) {
         if (!userRepository.getByEmail(email).isEmpty()) {
-            throw new DataIntegrityViolationException("Пользователь с " + email + " уже зарегистрирован.");
+            throw new ConflictException("Пользователь с " + email + " уже зарегистрирован.");
         }
     }
 

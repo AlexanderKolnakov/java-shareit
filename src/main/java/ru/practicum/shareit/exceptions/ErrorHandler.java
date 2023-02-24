@@ -42,4 +42,11 @@ public class ErrorHandler {
         log.info("500 {}", e.getMessage());
         return e.getMessage();
     }
+
+    @ExceptionHandler(ConflictException.class)
+    @ResponseStatus(value = HttpStatus.CONFLICT)
+    public String error409(final ConflictException e) {
+        log.info("409 {}", e.getMessage());
+        return e.getMessage();
+    }
 }
