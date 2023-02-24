@@ -218,7 +218,7 @@ class BookingServiceImplTest {
 
         when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
         when(bookingRepository.getReferenceById(bookingId)).thenReturn(booking);
-        when(bookingRepository.getById(bookingId)).thenReturn(booking);
+        when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
 
         BookingException bookingException = assertThrows(BookingException.class,
                 () -> bookingService.changeBookingStatus(userId, bookingId, approved));
@@ -246,7 +246,7 @@ class BookingServiceImplTest {
 
         when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
         when(bookingRepository.getReferenceById(bookingId)).thenReturn(booking);
-        when(bookingRepository.getById(bookingId)).thenReturn(booking);
+        when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
         when(bookingRepository.save(any())).thenReturn(booking);
 
         BookingDto actualBooking = bookingService.changeBookingStatus(userId, bookingId, approved);
@@ -324,7 +324,7 @@ class BookingServiceImplTest {
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
-        when(bookingRepository.getById(bookingId)).thenReturn(booking);
+        when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
 
         EntityNotFoundException entityNotFoundException = assertThrows(EntityNotFoundException.class,
                 () -> bookingService.getBooking(userId, bookingId));
@@ -348,7 +348,7 @@ class BookingServiceImplTest {
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
-        when(bookingRepository.getById(bookingId)).thenReturn(booking);
+        when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
 
         BookingDto actualBooking = bookingService.getBooking(userId, bookingId);
 

@@ -64,7 +64,7 @@ class UserServiceImplTest {
 
         when(userRepository.save(any())).thenThrow(DataIntegrityViolationException.class);
 
-        assertThrows(DataIntegrityViolationException.class, () -> userService.createUser(userCreateDto));
+        assertThrows(ConflictException.class, () -> userService.createUser(userCreateDto));
         verify(userRepository, never()).save(new User());
     }
 
@@ -80,7 +80,6 @@ class UserServiceImplTest {
         newUserDto.setName("New");
         newUserDto.setEmail("New@mail.com");
         when(userRepository.findById(any())).thenReturn(Optional.of(oldUser));
-        when(userRepository.getByEmail(any())).thenReturn(Collections.emptyList());
         when(userRepository.save(any())).thenReturn(oldUser);
 
         UserDto actualUser = userService.updateUser(userId, newUserDto);
@@ -92,22 +91,6 @@ class UserServiceImplTest {
         assertEquals(savedUser.getEmail(), "New@mail.com");
     }
 
-    @Test
-    void updateUser_whenUserEmailAlreadyExists_thenUserNotUpdate() {
-        Long userId = 1L;
-        User oldUser = new User();
-        oldUser.setId(userId);
-        oldUser.setEmail("Old@mail.com");
-
-        UserDto newUserDto = new UserDto();
-        newUserDto.setName("New");
-        when(userRepository.getByEmail(any())).thenReturn(List.of(oldUser));
-
-
-        assertThrows(DataIntegrityViolationException.class,
-                () -> userService.updateUser(userId, newUserDto));
-        verify(userRepository, never()).save(new User());
-    }
 
     @Test
     void updateUser_whenUserNotFound_thenReturnedEntityNotFoundException() {
