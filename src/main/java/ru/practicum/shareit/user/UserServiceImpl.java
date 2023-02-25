@@ -1,11 +1,11 @@
 package ru.practicum.shareit.user;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exceptions.ConflictException;
 import ru.practicum.shareit.user.dto.UserCreateDto;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.dto.UserUpdateDto;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.EntityNotFoundException;
@@ -13,7 +13,7 @@ import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -27,20 +27,21 @@ public class UserServiceImpl implements UserService {
             return UserMapper.toUserDto(userResponse);
 
         } catch (DataIntegrityViolationException e) {
-            throw new DataIntegrityViolationException("Пользователь с " + user.getEmail() + " уже зарегистрирован.");
+            throw new ConflictException("Пользователь с " + user.getEmail() + " уже зарегистрирован.");
         }
     }
 
     @Override
     @Transactional(rollbackOn = Exception.class)
-    public UserDto updateUser(Long userId, UserUpdateDto userUpdateDto) {
-        checkUserId(userId);
+    public UserDto updateUser(Long userId, UserDto userUpdateDto) {
         userUpdateDto.setId(userId);
-        checkUserEmail(userUpdateDto.getEmail());
 
-        User userFromRepository = userRepository.getById(userId);
-        return UserMapper.toUserDto(userRepository.save(UserMapper.toUser(userUpdateDto, userFromRepository)));
+        final User userFromRepository = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Пользователя с id " + userId + " не существует"));
+        updateUserInfo(userUpdateDto, userFromRepository);
+        return UserMapper.toUserDto(userRepository.save(userFromRepository));
     }
+
 
     @Override
     public List<UserDto> findAll() {
@@ -50,27 +51,32 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getUser(Long userId) {
-        checkUserId(userId);
-        User user = userRepository.getById(userId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Пользователя с id " + userId + " не существует"));
         return UserMapper.toUserDto(user);
     }
 
     @Override
     @Transactional(rollbackOn = Exception.class)
     public void deleteUser(Long userId) {
-        checkUserId(userId);
+        userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Пользователя с id " + userId + " не существует"));
         userRepository.deleteById(userId);
     }
 
-    private void checkUserId(Long userId) {
-        if (userRepository.findById(userId).isEmpty()) {
-            throw new EntityNotFoundException("Пользователя с id " + userId + " не существует");
-        }
-    }
 
     private void checkUserEmail(String email) {
         if (!userRepository.getByEmail(email).isEmpty()) {
-            throw new DataIntegrityViolationException("Пользователь с " + email + " уже зарегистрирован.");
+            throw new ConflictException("Пользователь с " + email + " уже зарегистрирован.");
+        }
+    }
+
+    private void updateUserInfo(UserDto userUpdateDto, User userFromRepository) {
+        if (userUpdateDto.getName() != null) {
+            userFromRepository.setName(userUpdateDto.getName());
+        }
+        if (userUpdateDto.getEmail() != null) {
+            userFromRepository.setEmail(userUpdateDto.getEmail());
         }
     }
 }

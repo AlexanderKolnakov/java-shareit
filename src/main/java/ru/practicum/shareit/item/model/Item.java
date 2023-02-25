@@ -39,7 +39,7 @@ public class Item {
     private Long owner;
 
     @Column(name = "REQUEST_ID")
-    private String request;
+    private Long requestId;
 
     @Override
     public boolean equals(Object o) {

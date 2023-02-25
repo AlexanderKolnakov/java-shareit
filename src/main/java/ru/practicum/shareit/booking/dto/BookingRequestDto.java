@@ -3,6 +3,7 @@ package ru.practicum.shareit.booking.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.validation.AfterNow;
 
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
+@RequiredArgsConstructor
 public class BookingRequestDto {
 
     private Long id;

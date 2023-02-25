@@ -1,6 +1,6 @@
 package ru.practicum.shareit.booking;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @Slf4j
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Validated
 @RequestMapping(path = "/bookings")
 public class BookingController {
@@ -46,16 +46,20 @@ public class BookingController {
     @GetMapping()
     public List<BookingDto> getAllBooking(@RequestHeader("X-Sharer-User-Id") Long userId,
                                           @RequestParam(name = "state", defaultValue = "ALL",
-                                                  required = false) String state) {
+                                                  required = false) String state,
+                                          @RequestParam(name = "from", defaultValue = "0") int from,
+                                          @RequestParam(name = "size", defaultValue = "20") int size) {
         log.debug("Получен GET запрос на получение информации обо всех бронированиях пользователя с id: {}.", userId);
-        return bookingService.getAllBooking(userId, state, false);
+        return bookingService.getAllBooking(userId, state, false, from, size);
     }
 
     @GetMapping("/owner")
     public List<BookingDto> getAllBookingByOwner(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                  @RequestParam(name = "state", defaultValue = "ALL",
-                                                         required = false) String state) {
+                                                         required = false) String state,
+                                                 @RequestParam(name = "from", defaultValue = "0") int from,
+                                                 @RequestParam(name = "size", defaultValue = "20") int size) {
         log.debug("Получен GET запрос на получение информации обо всех бронированиях владельца с id: {}.", userId);
-        return bookingService.getAllBooking(userId, state, true);
+        return bookingService.getAllBooking(userId, state, true, from, size);
     }
 }
