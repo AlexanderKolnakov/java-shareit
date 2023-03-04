@@ -8,7 +8,7 @@ public class ShareItTests {
 
     @Test
     public void main() {
-        ShareItApp.main(new String[]{});
+        ShareItServer.main(new String[]{});
     }
 
     @Test

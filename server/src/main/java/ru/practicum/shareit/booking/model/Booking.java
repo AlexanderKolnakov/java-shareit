@@ -5,10 +5,8 @@ import lombok.*;
 import org.hibernate.Hibernate;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.validation.AfterNow;
 
 import javax.persistence.*;
-import javax.validation.constraints.Positive;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -23,16 +21,13 @@ public class Booking {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Positive(message = "Некорректный номер id.")
     private Long id;
 
     @Column(name = "START_DATE")
-    @AfterNow(message = "Дата начала бронирования не может быть в прошлом.")
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime start;
 
     @Column(name = "END_DATE")
-    @AfterNow(message = "Дата окончания бронирования не может быть в прошлом.")
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime end;
 

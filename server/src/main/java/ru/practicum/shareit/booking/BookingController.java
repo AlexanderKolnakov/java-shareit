@@ -3,26 +3,23 @@ package ru.practicum.shareit.booking;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
 
-import javax.validation.Valid;
 import java.util.List;
 
 
 @RestController
 @Slf4j
 @AllArgsConstructor
-@Validated
 @RequestMapping(path = "/bookings")
 public class BookingController {
     private final BookingService bookingService;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public BookingDto createBooking(@RequestHeader("X-Sharer-User-Id") Long bookerId,
-                                    @RequestBody @Valid BookingRequestDto bookingRequestDto) {
+                                    @RequestBody BookingRequestDto bookingRequestDto) {
         log.debug("Получен POST запрос на бронирование (booking) вещи");
         return bookingService.createBooking(bookerId, bookingRequestDto);
     }

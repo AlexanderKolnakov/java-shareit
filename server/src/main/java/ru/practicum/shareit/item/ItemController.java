@@ -2,14 +2,12 @@ package ru.practicum.shareit.item;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 
-import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -18,7 +16,6 @@ import java.util.List;
 @RestController
 @Slf4j
 @AllArgsConstructor
-@Validated
 @RequestMapping("/items")
 public class ItemController {
 
@@ -26,7 +23,7 @@ public class ItemController {
 
     @PostMapping()
     public ItemDto createItem(@RequestHeader("X-Sharer-User-Id") Long ownerId,
-                              @RequestBody @Valid Item item) {
+                              @RequestBody Item item) {
         log.debug("Получен POST запрос на создание вещи");
         return itemService.createItem(ownerId, item);
     }
@@ -69,7 +66,7 @@ public class ItemController {
     @PostMapping("/{itemId}/comment")
     public CommentDto createComment(@RequestHeader("X-Sharer-User-Id") Long authorId,
                                     @PathVariable Long itemId,
-                                    @RequestBody @Valid Comment comment) {
+                                    @RequestBody Comment comment) {
         comment.setCreated(LocalDateTime.now());
         log.debug("Получен POST запрос на создание комментария");
         return itemService.createComment(authorId, itemId, comment);

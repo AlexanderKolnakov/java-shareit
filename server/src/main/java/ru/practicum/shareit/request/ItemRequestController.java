@@ -2,26 +2,23 @@ package ru.practicum.shareit.request;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.model.ItemRequest;
 
-import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
 @Slf4j
 @AllArgsConstructor
-@Validated
 @RequestMapping(path = "/requests")
 public class ItemRequestController {
     private final ItemRequestService itemRequestService;
 
     @PostMapping()
     public ItemRequestDto createItemRequest(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                            @RequestBody @Valid ItemRequest itemRequest) {
+                                            @RequestBody ItemRequest itemRequest) {
         itemRequest.setCreated(LocalDateTime.now());
         log.debug("Получен POST запрос на создание запроса вещи с описанием: '" + itemRequest.getDescription() + "'");
         return itemRequestService.createItemRequest(userId, itemRequest);

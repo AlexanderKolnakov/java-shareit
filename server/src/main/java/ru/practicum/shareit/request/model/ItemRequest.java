@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Positive;
 import java.time.LocalDateTime;
 
 @Getter
@@ -19,10 +17,8 @@ public class ItemRequest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Positive(message = "Некорректный номер id.")
     private Long id;
 
-    @NotBlank(message = "Вы не указали описание вещи")
     private String description;
 
     @Column(name = "USER_REQUEST_ID")
