@@ -6,11 +6,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
 
 import javax.validation.Valid;
-import java.util.List;
 
 
 @RestController
@@ -30,8 +28,8 @@ public class BookingController {
 
     @PatchMapping("/{bookingId}")
     public ResponseEntity<Object> changeBookingStatus(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                          @PathVariable Long bookingId,
-                                          @RequestParam("approved") Boolean approved) {
+                                                      @PathVariable Long bookingId,
+                                                      @RequestParam("approved") Boolean approved) {
         log.info("Получен PATCH запрос на обновление статуса бронирование с id: " + bookingId +
                 " от пользователя с id: " + userId);
         return bookingClient.changeBookingStatus(userId, bookingId, approved);
@@ -45,21 +43,21 @@ public class BookingController {
     }
 
     @GetMapping()
-    public List<ResponseEntity<Object>> getAllBooking(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                          @RequestParam(name = "state", defaultValue = "ALL",
-                                                  required = false) String state,
-                                          @RequestParam(name = "from", defaultValue = "0") int from,
-                                          @RequestParam(name = "size", defaultValue = "20") int size) {
+    public ResponseEntity<Object> getAllBooking(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                                @RequestParam(name = "state", defaultValue = "ALL",
+                                                        required = false) String state,
+                                                @RequestParam(name = "from", defaultValue = "0") int from,
+                                                @RequestParam(name = "size", defaultValue = "20") int size) {
         log.debug("Получен GET запрос на получение информации обо всех бронированиях пользователя с id: {}.", userId);
         return bookingClient.getAllBooking(userId, state, false, from, size);
     }
 
     @GetMapping("/owner")
-    public List<ResponseEntity<Object>> getAllBookingByOwner(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                                 @RequestParam(name = "state", defaultValue = "ALL",
-                                                         required = false) String state,
-                                                 @RequestParam(name = "from", defaultValue = "0") int from,
-                                                 @RequestParam(name = "size", defaultValue = "20") int size) {
+    public ResponseEntity<Object> getAllBookingByOwner(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                                       @RequestParam(name = "state", defaultValue = "ALL",
+                                                               required = false) String state,
+                                                       @RequestParam(name = "from", defaultValue = "0") int from,
+                                                       @RequestParam(name = "size", defaultValue = "20") int size) {
         log.debug("Получен GET запрос на получение информации обо всех бронированиях владельца с id: {}.", userId);
         return bookingClient.getAllBooking(userId, state, true, from, size);
     }

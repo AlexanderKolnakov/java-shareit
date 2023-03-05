@@ -1,7 +1,6 @@
 package ru.practicum.shareit.booking;
 
 import lombok.AllArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -18,7 +17,6 @@ import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Objects;
 
@@ -33,8 +31,8 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional(rollbackOn = Exception.class)
-    public BookingDto createBooking(final @NotNull Long bookerId,
-                                    final @NotNull BookingRequestDto bookingRequestDto) {
+    public BookingDto createBooking(Long bookerId,
+                                    BookingRequestDto bookingRequestDto) {
 
         checkBookerId(bookerId);
         checkBookingDateTime(bookingRequestDto);
@@ -82,12 +80,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<BookingDto> getAllBooking(Long userId, String state, Boolean isOwner, int from, int size) {
         checkBookerId(userId);
-        try {
-            Pageable pageableCheck = PageRequest.of(from, size);
-        } catch (IllegalArgumentException e) {
-            throw new DataIntegrityViolationException("Не правильно указаны индексы искомых запросов: "
-                    + from + " и " + size);
-        }
+
         Pageable pageable = PageRequest.of((from / size), size, Sort.by("start").descending());
 
         final State stateCorrect = parseStatus(state);
@@ -141,7 +134,7 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
-    private State parseStatus(final @NotNull String state) {
+    private State parseStatus(String state) {
         try {
             return State.valueOf(state);
         } catch (IllegalArgumentException e) {
@@ -162,7 +155,7 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
-    private void checkItemId(final @NotNull Item item) {
+    private void checkItemId(Item item) {
         if (item.getId() == null) {
             throw new EntityNotFoundException("Вещи с id " + item.getId() + " не существует");
         }

@@ -2,6 +2,7 @@ package ru.practicum.shareit.user;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserCreateDto;
@@ -16,35 +17,36 @@ import java.util.List;
 @AllArgsConstructor
 @RequestMapping(path = "/users")
 public class UserController {
-    private final UserService userService;
+    private final UserClient userClient;
 
     @PostMapping()
-    public UserDto createUser(@RequestBody @Valid UserCreateDto user) {
+    public ResponseEntity<Object> createUser(@RequestBody @Valid UserCreateDto user) {
         log.debug("Получен POST запрос на создание пользователя");
-        return userService.createUser(user);
+        return userClient.createUser(user);
     }
 
     @PatchMapping("/{userId}")
-    public UserDto updateUser(@PathVariable Long userId, @RequestBody @Valid UserDto userDto) {
+    public ResponseEntity<Object> updateUser(@PathVariable Long userId, @RequestBody @Valid UserDto userDto) {
         log.debug("Получен PATCH запрос на обновление пользователя пользователя с id: " + userId);
-        return userService.updateUser(userId, userDto);
+        return userClient.updateUser(userId, userDto);
     }
 
     @GetMapping
-    public List<UserDto> findAllUsers() {
+//    public List<UserDto> findAllUsers() {
+    public ResponseEntity<Object> findAllUsers() {
         log.debug("Получен GET запрос на получение списка всех пользователей.");
-        return userService.findAll();
+        return userClient.findAll();
     }
 
     @GetMapping("/{userId}")
-    public UserDto findUser(@PathVariable Long userId) {
+    public ResponseEntity<Object> findUser(@PathVariable Long userId) {
         log.debug("Получен GET запрос на получение пользователя с id: {}.", userId);
-        return userService.getUser(userId);
+        return userClient.getUser(userId);
     }
 
     @DeleteMapping("/{userId}")
     public void deleteUser(@PathVariable Long userId) {
         log.debug("Получен DELETE запрос на удаление пользователя с id: {}.", userId);
-        userService.deleteUser(userId);
+        userClient.deleteUser(userId);
     }
 }
