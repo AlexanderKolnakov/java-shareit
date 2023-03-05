@@ -48,24 +48,6 @@ class UserControllerIntegrationTest {
         assertEquals(objectMapper.writeValueAsString(userCreate), result);
     }
 
-//    @Test
-//    @SneakyThrows
-//    void createUser_whenUserNotValid_thenReturnBadRequest() {
-//        UserCreateDto userCreate = new UserCreateDto();
-//        userCreate.setEmail("notEmail");
-//
-//        String result = mockMvc.perform(post("/users")
-//                        .contentType("application/json")
-//                        .content(objectMapper.writeValueAsString(userCreate)))
-//                .andExpect(status().isBadRequest())
-//                .andReturn()
-//                .getResponse()
-//                .getContentAsString();
-//
-//        assertEquals("Введен не корректный email.", result);
-//        verify(userService, never()).createUser(userCreate);
-//    }
-
     @Test
     @SneakyThrows
     void updateUser_whenUserValid_thenReturnUser() {
@@ -86,27 +68,6 @@ class UserControllerIntegrationTest {
 
         assertEquals(objectMapper.writeValueAsString(userCreate), result);
     }
-
-//    @Test
-//    @SneakyThrows
-//    void updateUser_whenUserNotValid_thenReturnBadRequest() {
-//        long userId = 1L;
-//        UserDto userCreate = new UserDto();
-//        userCreate.setEmail("NotCorrectEmail");
-//        userCreate.setName("SomeName");
-//        when(userService.updateUser(userId, userCreate))
-//                .thenReturn(userCreate);
-//
-//        String result = mockMvc.perform(patch("/users/{id}", userId)
-//                        .contentType("application/json")
-//                        .content(objectMapper.writeValueAsString(userCreate)))
-//                .andExpect(status().isBadRequest())
-//                .andReturn()
-//                .getResponse()
-//                .getContentAsString();
-//
-//        assertEquals("Введен не корректный email.", result);
-//    }
 
     @Test
     @SneakyThrows

@@ -650,21 +650,4 @@ class BookingServiceImplTest {
                 () -> bookingService.getAllBooking(userId, state, isOwner, from, size));
         assertEquals(bookingException.getMessage(), "Unknown state: " + state);
     }
-
-//    @Test
-//    void getAllBooking_whenPageableNotCorrect_thenReturnBabRequest() {
-//        long userId = 1L;
-//        String state = "ALL";
-//        Boolean isOwner = true;
-//        int from = -20;
-//        int size = -20;
-//        User user = new User();
-//
-//        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-//
-//        DataIntegrityViolationException dataIntegrityViolationException = assertThrows(DataIntegrityViolationException.class,
-//                () -> bookingService.getAllBooking(userId, state, isOwner, from, size));
-//        assertEquals(dataIntegrityViolationException.getMessage(), "Не правильно указаны индексы искомых запросов: "
-//                + from + " и " + size);
-//    }
 }

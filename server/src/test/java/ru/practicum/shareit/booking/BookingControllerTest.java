@@ -61,56 +61,6 @@ class BookingControllerTest {
                 .getContentAsString();
     }
 
-//    @Test
-//    @SneakyThrows
-//    void createBooking_whenStartDateNotValid_thenBAdRequest() {
-//        long bookerId = 1L;
-//        BookingRequestDto bookingRequestDto = new BookingRequestDto();
-//        bookingRequestDto.setStart(LocalDateTime.now().minusMinutes(1));
-//        bookingRequestDto.setEnd(LocalDateTime.now().plusMinutes(1));
-//        BookingDto bookingDto = new BookingDto();
-//
-//        when(bookingService.createBooking(any(), any()))
-//                .thenReturn(bookingDto);
-//
-//        mockMvc.perform(post("/bookings")
-//                        .header("X-Sharer-User-Id", bookerId)
-//                        .content(objectMapper.writeValueAsString(bookingRequestDto))
-//                        .characterEncoding(StandardCharsets.UTF_8)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isBadRequest())
-//                .andExpect(jsonPath("$", is("Дата начала бронирования не может быть в прошлом.")))
-//                .andReturn()
-//                .getResponse()
-//                .getContentAsString();
-//    }
-
-//    @Test
-//    @SneakyThrows
-//    void createBooking_whenEndDateNotValid_thenBAdRequest() {
-//        long bookerId = 1L;
-//        BookingRequestDto bookingRequestDto = new BookingRequestDto();
-//        bookingRequestDto.setStart(LocalDateTime.now().plusMinutes(1));
-//        bookingRequestDto.setEnd(LocalDateTime.now().minusMinutes(1));
-//        BookingDto bookingDto = new BookingDto();
-//
-//        when(bookingService.createBooking(any(), any()))
-//                .thenReturn(bookingDto);
-//
-//        mockMvc.perform(post("/bookings")
-//                        .header("X-Sharer-User-Id", bookerId)
-//                        .content(objectMapper.writeValueAsString(bookingRequestDto))
-//                        .characterEncoding(StandardCharsets.UTF_8)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isBadRequest())
-//                .andExpect(jsonPath("$", is("Дата окончания бронирования не может быть в прошлом.")))
-//                .andReturn()
-//                .getResponse()
-//                .getContentAsString();
-//    }
-
     @Test
     @SneakyThrows
     void changeBookingStatus() {

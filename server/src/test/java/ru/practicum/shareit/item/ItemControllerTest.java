@@ -62,84 +62,6 @@ class ItemControllerTest {
                 .andExpect(jsonPath("$.available", is(item.getAvailable())));
     }
 
-//    @Test
-//    @SneakyThrows
-//    void createItem_whenItemNotValidName_thenReturnBadRequest() {
-//        long ownerId = 1L;
-//        Item item = new Item();
-//        item.setDescription("Some Description");
-//        item.setAvailable(true);
-//        item.setOwner(ownerId);
-//
-//        ItemDto itemDto = new ItemDto();
-//
-//        when(itemService.createItem(ownerId, item))
-//                .thenReturn(itemDto);
-//
-//        String result = mockMvc.perform(post("/items")
-//                        .header("X-Sharer-User-Id", ownerId)
-//                        .contentType("application/json")
-//                        .content(objectMapper.writeValueAsString(item)))
-//                .andExpect(status().isBadRequest())
-//                .andReturn()
-//                .getResponse()
-//                .getContentAsString();
-//
-//        assertEquals("Вы не указали имя вещи", result);
-//    }
-
-//    @Test
-//    @SneakyThrows
-//    void createItem_whenItemNotValidDescription_thenReturnBadRequest() {
-//        long ownerId = 1L;
-//        Item item = new Item();
-//        item.setName("Some Name");
-//        item.setAvailable(true);
-//        item.setOwner(ownerId);
-//
-//        ItemDto itemDto = new ItemDto();
-//
-//        when(itemService.createItem(ownerId, item))
-//                .thenReturn(itemDto);
-//
-//        String result = mockMvc.perform(post("/items")
-//                        .header("X-Sharer-User-Id", ownerId)
-//                        .contentType("application/json")
-//                        .content(objectMapper.writeValueAsString(item)))
-//                .andExpect(status().isBadRequest())
-//                .andReturn()
-//                .getResponse()
-//                .getContentAsString();
-//
-//        assertEquals("Вы не указали описание вещи", result);
-//    }
-
-//    @Test
-//    @SneakyThrows
-//    void createItem_whenItemNotValidAvailable_thenReturnBadRequest() {
-//        long ownerId = 1L;
-//        Item item = new Item();
-//        item.setDescription("Some Description");
-//        item.setName("Some Name");
-//        item.setOwner(ownerId);
-//
-//        ItemDto itemDto = new ItemDto();
-//
-//        when(itemService.createItem(ownerId, item))
-//                .thenReturn(itemDto);
-//
-//        String result = mockMvc.perform(post("/items")
-//                        .header("X-Sharer-User-Id", ownerId)
-//                        .contentType("application/json")
-//                        .content(objectMapper.writeValueAsString(item)))
-//                .andExpect(status().isBadRequest())
-//                .andReturn()
-//                .getResponse()
-//                .getContentAsString();
-//
-//        assertEquals("Вы не указали статус: доступна или вещь для аренды или нет", result);
-//    }
-
     @Test
     @SneakyThrows
     void updateItem() {
@@ -243,27 +165,4 @@ class ItemControllerTest {
 
         verify(itemService).createComment(any(), any(), any());
     }
-
-//    @Test
-//    @SneakyThrows
-//    void createComment_whenCommentNotValid_thenBadRequest() {
-//        long authorId = 1L;
-//        long itemId = 1L;
-//        Comment comment = new Comment();
-//        CommentDto commentDto = new CommentDto();
-//
-//        when(itemService.createComment(any(), any(), any()))
-//                .thenReturn(commentDto);
-//
-//        mockMvc.perform(post("/items/" + itemId + "/comment")
-//                        .header("X-Sharer-User-Id", authorId)
-//                        .content(objectMapper.writeValueAsString(comment))
-//                        .characterEncoding(StandardCharsets.UTF_8)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isBadRequest())
-//                .andExpect(jsonPath("$", is("Вы не написали комментарий.")));
-//
-//        verify(itemService, never()).createComment(any(), any(), any());
-//    }
 }

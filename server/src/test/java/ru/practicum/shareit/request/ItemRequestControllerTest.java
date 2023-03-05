@@ -53,24 +53,6 @@ class ItemRequestControllerTest {
                 .getContentAsString();
     }
 
-//    @Test
-//    @SneakyThrows
-//    void createItemRequest_whenItemRequestNotValid_thenReturnBadRequest() {
-//        ItemRequest itemRequestCreate = new ItemRequest();
-//        long userId = 1L;
-//        when(itemRequestService.createItemRequest(any(), any()))
-//                .thenReturn(ItemRequestMapper.itemRequestToDto(itemRequestCreate));
-//
-//        String result = mockMvc.perform(post("/requests")
-//                        .header("X-Sharer-User-Id", userId)
-//                        .contentType("application/json")
-//                        .content(objectMapper.writeValueAsString(itemRequestCreate)))
-//                .andExpect(status().isBadRequest())
-//                .andReturn()
-//                .getResponse()
-//                .getContentAsString();
-//        assertEquals("Вы не указали описание вещи", result);
-//    }
 
     @Test
     @SneakyThrows
