@@ -24,7 +24,7 @@ services:
       - SPRING_DATASOURCE_USERNAME=shareit
       - SPRING_DATASOURCE_PASSWORD=shareit
     volumes:
-      - /etc/timezone:/etc/timezone:ro
+#      - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/timezone:ro
 
   db:
