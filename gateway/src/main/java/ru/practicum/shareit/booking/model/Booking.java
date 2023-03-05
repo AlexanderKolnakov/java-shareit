@@ -8,7 +8,6 @@ import ru.practicum.shareit.validation.AfterNow;
 
 import javax.validation.constraints.Positive;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Getter
 @Setter

@@ -56,10 +56,10 @@ public class ItemController {
 
     @GetMapping("/search")
     public ResponseEntity<Object> findItemByDescription(
-                                                 @RequestHeader("X-Sharer-User-Id") Long userId,
-                                                 @RequestParam String text,
-                                                 @RequestParam(name = "from", defaultValue = "0") int from,
-                                                 @RequestParam(name = "size", defaultValue = "20") int size) {
+            @RequestHeader("X-Sharer-User-Id") Long userId,
+            @RequestParam String text,
+            @RequestParam(name = "from", defaultValue = "0") int from,
+            @RequestParam(name = "size", defaultValue = "20") int size) {
         log.debug("Получен GET запрос на получение вещи по описанию строки, text =" + text);
         if (text.isEmpty()) {
             return new ResponseEntity<>(Collections.emptyList(), HttpStatus.OK);

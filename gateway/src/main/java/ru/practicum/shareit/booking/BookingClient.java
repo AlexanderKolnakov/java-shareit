@@ -57,7 +57,7 @@ public class BookingClient extends BaseClient {
         if (required) {
             return get("/owner?state=" + state + "&from=" + from + "&size=" + size, userId, parameters);
         } else {
-            return get("/?state=" + state+ "&from=" + from + "&size=" + size, userId, parameters);
+            return get("/?state=" + state + "&from=" + from + "&size=" + size, userId, parameters);
         }
     }
 }

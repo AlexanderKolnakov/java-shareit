@@ -14,5 +14,4 @@ public class UserCreateDto {
     private String name;
 
     private String email;
-
 }
