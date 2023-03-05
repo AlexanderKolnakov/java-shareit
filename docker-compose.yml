@@ -12,7 +12,7 @@ services:
       - SHAREIT_SERVER_URL=http://server:9090
 
   server:
-    build: server1
+    build: server
     image: shareit-server
     container_name: shareit-server
     ports:
